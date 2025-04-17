@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    About Us
+{% endblock %}
+
+{% block content %}
+
+<!-- About Us Heading -->
+<div class="container text-center mt-4">
+    <h2 class="fw-bold">About Science Coaching Center</h2>
+    <p class="text-muted">Empowering students with knowledge & success!</p>
+</div>
+
+<!-- Director's Section -->
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-4 text-center">
+            <img src="{{ url_for('static', filename='images/director.jpeg') }}" class="img-fluid rounded-circle shadow-lg" width="250" height="250" alt="Director">
+        </div>
+        <div class="col-md-8">
+            <h3 class="fw-bold">Message from Our Director</h3>
+            <p class="lead">
+                "At Science Coaching Center, we believe in providing quality education that shapes the future of our students.  
+                Our goal is to ensure that every student achieves academic excellence and personal growth."  
+                <br><br>– <b>Dr. Ankit Kumar</b>, Director
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Institute Details -->
+<div class="container my-5 text-center">
+    <h3 class="fw-bold">About Our Institute</h3>
+    <p class="text-muted">Science Coaching Center is a leading institution for competitive exams and academic coaching. We offer expert guidance and a result-oriented approach.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <h5 class="fw-bold">Established</h5>
+            <p>2005</p>
+        </div>
+        <div class="col-md-4">
+            <h5 class="fw-bold">Courses Offered</h5>
+            <p>NEET, JEE, Board Exams, Foundation Courses</p>
+        </div>
+        <div class="col-md-4">
+            <h5 class="fw-bold">Success Rate</h5>
+            <p>85%+ Selections Every Year</p>
+        </div>
+    </div>
+</div>
+
+<!-- Achievers Section -->
+<div class="container my-5">
+    <h3 class="fw-bold text-center">Our Achievers</h3>
+    <p class="text-center text-muted">Meet our top-performing students who have excelled in various exams.</p>
+
+    <div class="row text-center mt-4">
+        <div class="col-md-3">
+            <img src="{{ url_for('static', filename='images/achiver1.jpeg') }}" class="img-fluid rounded shadow" alt="Topper 1">
+            <h5 class="mt-2">Rahul Sharma</h5>
+            <p>JEE Rank - 105</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{{ url_for('static', filename='images/achiver2.png') }}" class="img-fluid rounded shadow" alt="Topper 2">
+            <h5 class="mt-2">Priya Verma</h5>
+            <p>NEET Rank - 56</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{{ url_for('static', filename='images/achiver3.png') }}" class="img-fluid rounded shadow" alt="Topper 3">
+            <h5 class="mt-2">Amit Kumar</h5>
+            <p>Board - 98%</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{{ url_for('static', filename='images/achiver4.jpeg') }}" class="img-fluid rounded shadow" alt="Topper 4">
+            <h5 class="mt-2">Neha Singh</h5>
+            <p>JEE Rank - 210</p>
+        </div>
+    </div>
+</div>
+
+<!-- Achievers Section -->
+<div class="container my-5">
+    <h3 class="fw-bold text-center">Our Achievers</h3>
+    <p class="text-center text-muted">Meet our top-performing students who have excelled in various exams.</p>
+
+    <div class="row text-center mt-4">
+        <div class="col-md-3">
+            <img src="{{ url_for('static', filename='images/achiver1.jpeg') }}" class="img-fluid rounded shadow" alt="Topper 1">
+            <h5 class="mt-2">Rahul Sharma</h5>
+            <p>JEE Rank - 105</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{{ url_for('static', filename='images/achiver2.png') }}" class="img-fluid rounded shadow" alt="Topper 2">
+            <h5 class="mt-2">Priya Verma</h5>
+            <p>NEET Rank - 56</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{{ url_for('static', filename='images/achiver3.png') }}" class="img-fluid rounded shadow" alt="Topper 3">
+            <h5 class="mt-2">Amit Kumar</h5>
+            <p>Board - 98%</p>
+        </div>
+        <div class="col-md-3">
+            <img src="{{ url_for('static', filename='images/achiver4.jpeg') }}" class="img-fluid rounded shadow" alt="Topper 4">
+            <h5 class="mt-2">Neha Singh</h5>
+            <p>JEE Rank - 210</p>
+        </div>
+    </div>
+</div>
+
+<!-- Terms & Policies Section -->
+<div class="container my-5">
+    <h3 class="fw-bold text-center">Terms & Policies</h3>
+    <div class="card p-4 shadow">
+        <p><b>1. Admission Policy:</b> Admission is based on entrance tests & eligibility criteria.</p>
+        <p><b>2. Fee Policy:</b> Fees once paid are non-refundable under any circumstances.</p>
+        <p><b>3. Code of Conduct:</b> Students are expected to maintain discipline at all times.</p>
+        <p><b>4. Privacy Policy:</b> Student data will be kept confidential & not shared with third parties.</p>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer text-center mt-5 p-3 text-white" style="background: linear-gradient(90deg, #043c5c, #8706ba);">
+    <div class="container">
+        <p>© 2025 Science Coaching Center. All Rights Reserved.</p>
+    </div>
+</footer>
+
+{% endblock %}

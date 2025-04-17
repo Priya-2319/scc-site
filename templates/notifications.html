@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Notifications
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="fw-bold text-center">Latest Announcements</h2>
+    <p class="text-center text-muted">Stay updated with important news!</p>
+
+    <div class="table-responsive">
+        <table class="table table-hover shadow-sm rounded mt-4">
+            <thead class="text-white" style="background: linear-gradient(90deg, #043c5c, #8706ba);">
+                <tr>
+                    <th class="p-3">S.No.</th>
+                    <th class="p-3">Title</th>
+                    <th class="p-3">Date</th>
+                    <th class="p-3">Details</th>
+                    <th class="p-3">Posted By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for announcement in announcements %}
+                <tr class="{% if loop.index is even %}table-light{% endif %}">
+                    <td>{{ loop.index }}</td>
+                    <td><b>{{ announcement.title }}</b></td>
+                    <td>{{ announcement.date_posted.strftime('%B %d, %Y') }}</td>
+                    <td><button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#notifModal{{ loop.index }}">View</button></td>
+                    <td>{{ announcement.posted_by }}</td>
+                </tr>
+
+                <!-- Modal for Announcement Details -->
+                <div class="modal fade" id="notifModal{{ loop.index }}" tabindex="-1" aria-labelledby="notifLabel{{ loop.index }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="notifLabel{{ loop.index }}">{{ announcement.title }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {{ announcement.content }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer text-center mt-5 p-3 text-white" style="background: linear-gradient(90deg, #043c5c, #8706ba);">
+    <div class="container">
+        <p>© 2025 Science Coaching Center. All Rights Reserved.</p>
+    </div>
+</footer>
+{% endblock %}

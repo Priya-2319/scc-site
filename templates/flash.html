@@ -1,0 +1,77 @@
+<style>
+    /* Flash Messages */
+.flash-message {
+    background-color: #f8d7da;
+    /* Light red for error or alerts */
+    color: #721c24;
+    /* Dark red text */
+    padding: 15px;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    position: absolute;
+    /* Position it relative to the page */
+    bottom: 80px;
+    /* Adjust to be below the navbar height */
+    right: 70px;
+    /* Align it to the left side of the page */
+    max-width: 300px;
+    /* Optional: Limit the width */
+    z-index: 1000;
+    /* Ensure it stays above other elements */
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    /* Add a subtle shadow */
+}
+
+.flash-message.success {
+    background-color: #103203;
+    color: #1fd249;
+    border: 1px solid #1a30da;
+}
+
+.flash-message.danger {
+    background-color: #a10707;
+    color: #eaa4ab;
+    border: 1px solid #1a30da;
+}
+
+.flash-message.info {
+    background-color: #d36a0e;
+    color: #1b1515;
+    border: 1px solid #1a30da;
+}
+</style>
+
+
+<!-- flash message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages">
+    {% for category, message in messages %}
+    <div class="flash-message {{ category }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- script for flash message -->
+<div>
+    <script>
+        // Wait for the DOM to fully load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Select all flash messages
+            const flashMessages = document.querySelectorAll('.flash-message');
+
+            // Set a timer to fade out and remove them
+            flashMessages.forEach((msg) => {
+                setTimeout(() => {
+                    msg.style.opacity = '0'; // Fade out
+                    setTimeout(() => msg.remove(), 500); // Remove from DOM after fade-out
+                }, 3000); // 3 seconds before fade-out
+            });
+        });
+    </script>
+</div>

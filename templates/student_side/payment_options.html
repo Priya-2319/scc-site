@@ -1,0 +1,252 @@
+{% extends "student_side/student_base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Make Payment</h2>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <!-- Course Selection -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h4><i class="fas fa-book me-2"></i>Select Course</h4>
+                </div>
+                <div class="card-body">
+                    <select class="form-select form-select-lg mb-3" id="course-select">
+                        <option value="">-- Select Course --</option>
+                        {% for course in courses %}
+                        <option value="{{ course.course_id }}" 
+                                data-monthly-fee="{{ course.monthly_fee }}"
+                                data-full-fee="{{ course.full_fee }}"
+                                data-duration="{{ course.duration_months }}">
+                            {{ course.course_name }} (₹{{ course.monthly_fee }}/month)
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Current Month Payment -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-calendar-alt me-2"></i>Current Month Payment</h4>
+                </div>
+                <div class="card-body">
+                    <p class="fs-4">Amount: ₹<span id="current-month-amount">0</span></p>
+                    <button class="btn btn-primary btn-lg w-100" id="pay-current-month" disabled>
+                        <i class="fas fa-credit-card me-2"></i>Pay Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Full Course Payment -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-certificate me-2"></i>Full Course Payment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <p class="fs-4 mb-0">Amount: ₹<span id="full-course-amount">0</span></p>
+                        <span class="badge bg-warning text-dark">
+                            Save ₹<span id="discount-amount">0</span>
+                        </span>
+                    </div>
+                    <button class="btn btn-success btn-lg w-100" id="pay-full-course" disabled>
+                        <i class="fas fa-money-bill-wave me-2"></i>Pay Full Amount
+                    </button>
+                </div>
+            </div>
+
+            <!-- Select Month Payment -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h4><i class="fas fa-calendar-check me-2"></i>Select Month Payment</h4>
+                </div>
+                <div class="card-body">
+                    <select class="form-select form-select-lg mb-3" id="month-select">
+                        {% for month in next_months %}
+                        <option value="{{ month }}">{{ month }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="fs-4">Amount: ₹<span id="selected-month-amount">0</span></p>
+                    <button class="btn btn-info btn-lg w-100" id="pay-selected-month" disabled>
+                        <i class="fas fa-calendar-plus me-2"></i>Pay Selected Month
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const courseSelect = document.getElementById('course-select');
+        const currentMonthAmount = document.getElementById('current-month-amount');
+        const fullCourseAmount = document.getElementById('full-course-amount');
+        const selectedMonthAmount = document.getElementById('selected-month-amount');
+        const discountAmount = document.getElementById('discount-amount');
+        const payButtons = {
+            current_month: document.getElementById('pay-current-month'),
+            full_course: document.getElementById('pay-full-course'),
+            selected_month: document.getElementById('pay-selected-month')
+        };
+    
+        // Course selection handler
+        courseSelect.addEventListener('change', updatePaymentDetails);
+    
+        // Payment button handlers
+        Object.entries(payButtons).forEach(([type, button]) => {
+            button.addEventListener('click', () => handlePayment(type));
+        });
+    
+        function updatePaymentDetails() {
+            const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+            const monthlyFee = selectedOption?.dataset.monthlyFee;
+            const fullFee = selectedOption?.dataset.fullFee;
+            const duration = selectedOption?.dataset.duration || 12;
+    
+            if (monthlyFee && fullFee) {
+                const monthlyNum = parseFloat(monthlyFee);
+                const fullNum = parseFloat(fullFee);
+                const discount = (monthlyNum * duration) - fullNum;
+                
+                currentMonthAmount.textContent = monthlyFee;
+                fullCourseAmount.textContent = fullFee;
+                selectedMonthAmount.textContent = monthlyFee;
+                discountAmount.textContent = discount > 0 ? discount.toFixed(2) : '0';
+                
+                // Enable all buttons
+                Object.values(payButtons).forEach(btn => btn.disabled = false);
+            } else {
+                // Disable all buttons
+                Object.values(payButtons).forEach(btn => btn.disabled = true);
+            }
+        }
+    
+        async function handlePayment(paymentType) {
+            const courseId = courseSelect.value;
+            if (!courseId) {
+                alert('Please select a course first');
+                return;
+            }
+    
+            const button = payButtons[paymentType];
+            const originalText = button.innerHTML;
+            
+            try {
+                // Show loading state
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
+                button.disabled = true;
+    
+                const payload = {
+                    payment_type: paymentType,
+                    course_id: courseId
+                };
+    
+                if (paymentType === 'selected_month') {
+                    payload.selected_month = document.getElementById('month-select').value;
+                }
+    
+                const response = await fetch('/initiate-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+    
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error);
+    
+                initializeRazorpay(data, button);
+    
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert(error.message || 'Payment initialization failed');
+                resetButtonState(button, originalText);
+            }
+        }
+    
+        function initializeRazorpay(data, button) {
+            const options = {
+                key: data.key_id,
+                amount: data.amount,
+                currency: 'INR',
+                name: "Science Coaching Center",
+                description: `Payment for ${data.course_name}`,
+                order_id: data.order_id,
+                handler: async (response) => {
+                    try {
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Verifying...';
+                        const verification = await fetch(data.callback_url, {
+                            method: 'POST',
+                            body: new URLSearchParams({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
+                        
+                        const result = await verification.json();
+                        
+                        if (result.status === 'success') {
+                            window.location.href = result.redirect_url;
+                        } else {
+                            throw new Error(result.message || 'Payment verification failed');
+                        }
+                    } catch (error) {
+                        console.error('Verification error:', error);
+                        alert(error.message);
+                        window.location.href = '/payment/failed';
+                    } finally {
+                        resetButtonState(button, 'Pay Now');
+                    }
+                },
+                modal: {
+                    ondismiss: () => resetButtonState(button, 'Pay Now')
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+    
+            const rzp = new Razorpay(options);
+            rzp.open();
+        }
+    
+        function resetButtonState(button, text) {
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = text;
+            }
+        }
+    });
+</script>
+
+<style>
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    .form-select-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    .card {
+        border-radius: 12px;
+        border: none;
+    }
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        font-weight: 600;
+    }
+    .fs-4 {
+        font-weight: 600;
+    }
+</style>
+{% endblock %}

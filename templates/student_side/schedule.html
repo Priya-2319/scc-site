@@ -1,0 +1,99 @@
+{% extends 'student_side/student_base.html' %}
+
+{% block title %}My Class Schedule{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0"><i class="fas fa-calendar-alt me-2"></i> My Class Schedule</h2>
+        <button class="btn btn-outline-primary" onclick="window.print()">
+            <i class="fas fa-print me-2"></i> Print Schedule
+        </button>
+    </div>
+
+    {% if not schedules_by_date %}
+        <div class="alert alert-info">
+            No classes scheduled yet. Please check back later.
+        </div>
+    {% else %}
+        <div class="accordion" id="scheduleAccordion">
+            {% for date, schedules in schedules_by_date.items() %}
+            <div class="accordion-item mb-3 border-0 shadow-sm">
+                <h2 class="accordion-header" id="heading{{ loop.index }}">
+                    <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#collapse{{ loop.index }}"
+                            aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" 
+                            aria-controls="collapse{{ loop.index }}">
+                        <span class="badge bg-primary me-2">
+                            <i class="fas fa-calendar-day"></i>
+                        </span>
+                        <strong>{{ date }}</strong>
+                        <span class="badge bg-secondary ms-2">
+                            {{ schedules|length }} classes
+                        </span>
+                    </button>
+                </h2>
+                <div id="collapse{{ loop.index }}" 
+                     class="accordion-collapse collapse {% if loop.first %}show{% endif %}" 
+                     aria-labelledby="heading{{ loop.index }}" 
+                     data-bs-parent="#scheduleAccordion">
+                    <div class="accordion-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for schedule in schedules %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="mb-1">{{ schedule.class_name }}</h5>
+                                        <p class="mb-1 text-muted">
+                                            <i class="fas fa-chalkboard-teacher me-2"></i>
+                                            {{ schedule.teacher if schedule.teacher else 'Teacher not assigned' }}
+                                        </p>
+                                        {% if schedule.description %}
+                                        <p class="small text-muted mb-1">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            {{ schedule.description }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-clock me-1"></i>
+                                            {{ schedule.class_date }}----{{ schedule.class_time }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(4, 60, 92, 0.1);
+        color: #043c5c;
+    }
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0,0,0,.125);
+    }
+    @media print {
+        .accordion-button {
+            color: black !important;
+        }
+        .accordion-collapse {
+            display: block !important;
+        }
+        .no-print {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

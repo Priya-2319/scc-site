@@ -1,0 +1,65 @@
+{% extends 'admin_side/admin_dashboard.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-alt me-2"></i> Manage Resources</h2>
+        <a href="{{ url_for('add_resource') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Add Resource
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Course</th>
+                            <th>Uploaded</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resource in resources %}
+                        <tr>
+                            <td>
+                                <strong>{{ resource.title }}</strong>
+                                <p class="text-muted small mb-0">{{ resource.description|safe_truncate(50, 'No description') }}</p>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'danger' if resource.file_type == 'pdf' else 'info' }}">
+                                    {{ resource.file_type|upper }}
+                                </span>
+                            </td>
+                            <td>{{ resource.course.course_name if resource.course else 'General' }}</td>
+                            <td>{{ resource.date_uploaded.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="/{{ resource.file_path }}" 
+                                class="btn btn-sm btn-outline-primary me-1"
+                                target="_blank">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <form method="POST" action="{{ url_for('delete_resource', resource_id=resource.resource_id) }}" 
+                                      class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No resources found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

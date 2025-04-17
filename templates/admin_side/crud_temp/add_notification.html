@@ -1,0 +1,24 @@
+{% extends 'admin_side/admin_dashboard.html' %}
+
+{% block title %} Add Announcement {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="fw-bold text-center">Post a New Announcement</h2>
+
+    <form method="POST" action="{{ url_for('add_announcement') }}" class="shadow p-4 rounded mt-4">
+        <div class="mb-3">
+            <label class="form-label">Title:</label>
+            <input type="text" name="title" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Content:</label>
+            <textarea name="content" class="form-control" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Announcement</button>
+    </form>
+</div>
+<div class="text-center">
+    <a href="{{ url_for('admin_dashboard') }}" class="mt-3 btn btn-secondary">Go Back To Dashboard</a>
+</div>
+{% endblock %}

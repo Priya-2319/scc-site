@@ -1,0 +1,88 @@
+{% extends "student_side/student_base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 fw-bold text-primary">My Courses</h1>
+            <p class="lead text-muted">View and manage all your enrolled courses</p>
+        </div>
+    </div>
+
+    <!-- Student Info Card -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                <!-- <i class="bi bi-person-fill text-primary fs-3"></i> -->
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-4">
+                            <h4 class="card-title mb-1">{{ session['user_name'] }}</h4>
+                            <span class="badge bg-success">Student ID: {{ student_id }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h5 class="mb-0">Enrolled Courses</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if enrollments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Course</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Monthly Fee</th>
+                                    <th scope="col">Enrollment Date</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in enrollments %}
+                                <tr>
+                                    <td>
+                                        <h6 class="mb-1">{{ enrollment.course.course_name }}</h6>
+                                        <small class="text-muted">ID: {{ enrollment.course.course_id }}</small>
+                                    </td>
+                                    <td>{{ enrollment.course.description|truncate(50) }}</td>
+                                    <td>₹{{ enrollment.course.monthly_fee }}</td>
+                                    <td>{{ enrollment.enrollment_date.strftime('%d %b %Y') }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if enrollment.status == 'active' %}success{% else %}warning{% endif %}">
+                                            {{ enrollment.status|capitalize }}
+                                        </span>
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-book text-muted" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="text-muted">No courses enrolled yet</h5>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

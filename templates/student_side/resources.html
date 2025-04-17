@@ -1,0 +1,149 @@
+{% extends 'student_side/student_base.html' %}
+
+{% block title %}Study Resources{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h2 class="mb-0">
+            <i class="fas fa-book-open me-2"></i> My Study Resources
+        </h2>
+        
+        <!-- Filter Controls -->
+        <div class="d-flex flex-wrap gap-2">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                        id="resourceTypeDropdown" data-bs-toggle="dropdown">
+                    <i class="fas fa-filter me-2"></i>
+                    {% if selected_type %}
+                        {{ selected_type|upper }}
+                    {% else %}
+                        All Types
+                    {% endif %}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ url_for('student_resources') }}">All Types</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ url_for('student_resources', type='pdf') }}">PDF</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('student_resources', type='doc') }}">DOC/DOCX</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('student_resources', type='txt') }}">TXT</a></li>
+                </ul>
+            </div>
+            
+            <div class="input-group" style="width: 250px;">
+                <input type="text" class="form-control" id="resourceSearch" placeholder="Search resources...">
+                <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% if not resources %}
+        <div class="alert alert-info">
+            No resources available for your enrolled courses.
+            {% if selected_type %}
+                <a href="{{ url_for('student_resources') }}" class="alert-link">Clear filters</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="row g-4" id="resourcesContainer">
+            {% for resource in resources %}
+            <div class="col-md-6 col-lg-4 resource-card" 
+                 data-title="{{ resource.title.lower() }}"
+                 data-type="{{ resource.file_type }}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="badge bg-{{ 'danger' if resource.file_type == 'pdf' else 'primary' }}">
+                            {{ resource.file_type|upper }}
+                        </span>
+                        {% if resource.course %}
+                        <span class="badge bg-success">
+                            {{ resource.course.course_name }}
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary">
+                            General
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ resource.title }}</h5>
+                        <p class="card-text text-muted small">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            Uploaded: {{ resource.date_uploaded.strftime('%d-%m-%Y') }}
+                        </p>
+                        {% if resource.description %}
+                        <p class="card-text">{{ resource.description }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/{{ resource.file_path }}" 
+                               class="btn btn-sm btn-outline-primary"
+                               target="_blank">
+                                <i class="fas fa-download me-1"></i> Download
+                            </a>
+                            <span class="small text-muted">
+                                {% if resource.file_size %}
+                                    {{ resource.file_size }} •
+                                {% endif %}
+                                {{ resource.uploader.name if resource.uploader else 'Admin' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('resourceSearch');
+    const clearBtn = document.getElementById('clearSearch');
+    const resourceCards = document.querySelectorAll('.resource-card');
+    
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        resourceCards.forEach(card => {
+            const title = card.getAttribute('data-title');
+            if (title.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+    
+    // Clear search
+    clearBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        resourceCards.forEach(card => {
+            card.style.display = 'block';
+        });
+    });
+});
+</script>
+
+<style>
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 10px;
+        border: none;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    .badge {
+        font-weight: 500;
+    }
+</style>
+{% endblock %}

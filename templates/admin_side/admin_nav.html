@@ -1,0 +1,69 @@
+<nav class="navbar navbar-expand-lg" style="background: linear-gradient(90deg, #043c5c, #8706ba); padding: 10px; position: fixed; top: 0; width: 100%; z-index: 1000;">
+    <div class="container-fluid">
+        <!-- Logo and Brand Name -->
+        <a class="navbar-brand d-flex align-items-center" href="#" style="font-weight: bold; font-size: 1.3rem;
+        background: linear-gradient(90deg, #ffea00, #ff4f00); 
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent;">
+            <img src="{{ url_for('static', filename= 'images/logo.png') }}" alt="Logo" width="40" height="40" class="rounded-circle me-2"> Science Coaching Center
+        </a>
+        
+        <!-- Toggle Button for Mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list text-white fs-3"></i>
+        </button>
+
+        <!-- Navbar Links & Search Bar -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="{{ url_for('view_notifications') }}">Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="{{ url_for('admin_schedules') }}">Schedules</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="{{ url_for('manage_resources') }}">Resources</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            </ul>
+
+            <!-- Search Bar -->
+            <form class="d-flex ms-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search">
+                <button class="btn btn-warning" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .nav-link {
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .nav-link:hover {
+        color: #ffea00 !important;
+        transform: scale(1.05);
+    }
+
+    .navbar-toggler {
+        border: 1px solid white;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+
+    /* Prevent content from being hidden behind the fixed navbar */
+    body {
+        padding-top: 70px;
+    }
+</style>

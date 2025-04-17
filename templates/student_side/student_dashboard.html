@@ -1,0 +1,257 @@
+{% extends 'student_side/student_base.html' %}
+
+{% block title %} Student Dashboard {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Welcome Header -->
+    <div class="welcome-header text-center mb-5 p-4 rounded-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <h2 class="display-5 fw-bold text-white mb-3">👋 Welcome Back, {{ session['user_name'] }}!</h2>
+        <p class="lead text-white-50 mb-0">Ready to continue your learning journey?</p>
+        <div class="mt-3">
+            <span class="badge bg-light text-primary rounded-pill px-3 py-2">Today: {{ current_date }}</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Profile Section -->
+        <div class="col-lg-4 mb-4">
+            <div class="card profile-card shadow-lg border-0 rounded-3 overflow-hidden">
+                <div class="profile-bg" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); height: 100px;"></div>
+                <div class="card-body text-center pt-5 pb-4">
+                    <div class="profile-img-container mx-auto">
+                        <img src="{{ url_for('static', filename='images/achiver4.jpeg') }}" class="rounded-circle border border-4 border-white shadow" width="120">
+                    </div>
+                    <h3 class="mt-3 mb-1 fw-bold">{{ session['user_name'] }}</h3>
+                    <p class="text-muted mb-3"><i class="fas fa-graduation-cap me-2"></i>Student at Science Coaching Center</p>
+                    <div class="d-flex justify-content-center">
+                        <a href="{{ url_for('profile') }}" class="btn btn-primary rounded-pill px-4 py-2">
+                            <i class="fas fa-user-edit me-2"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <div class="row text-center">
+                        <div class="col-4 border-end">
+                            <h5 class="mb-0 fw-bold">5</h5>
+                            <small class="text-muted">Courses</small>
+                        </div>
+                        <div class="col-4 border-end">
+                            <h5 class="mb-0 fw-bold">12</h5>
+                            <small class="text-muted">Classes</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0 fw-bold">3</h5>
+                            <small class="text-muted">Pending</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-lg-8">
+            <div class="row g-4">
+                <!-- Course Card -->
+                <div class="col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm rounded-3 hover-effect">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mx-auto mb-3" style="background-color: rgba(102, 126, 234, 0.1);">
+                                <i class="fas fa-book fa-2x text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">My Courses</h5>
+                            <p class="text-muted mb-3">View and manage your enrolled courses</p>
+                            <a href="{{ url_for('my_courses') }}" class="btn btn-primary-soft rounded-pill px-4 w-75">
+                                Explore <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Card -->
+                <div class="col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm rounded-3 hover-effect">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mx-auto mb-3" style="background-color: rgba(40, 167, 69, 0.1);">
+                                <i class="fas fa-calendar-alt fa-2x text-success"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Class Schedule</h5>
+                            <p class="text-muted mb-3">Check upcoming class schedules</p>
+                            <a href="{{ url_for('student_schedule') }}" class="btn btn-success-soft rounded-pill px-4 w-75">
+                                View Schedule <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Announcements Card -->
+                <div class="col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm rounded-3 hover-effect">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mx-auto mb-3" style="background-color: rgba(255, 193, 7, 0.1);">
+                                <i class="fas fa-bell fa-2x text-warning"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Announcements</h5>
+                            <p class="text-muted mb-3">Stay updated with latest news</p>
+                            <a href="{{ url_for('announcements') }}" class="btn btn-warning-soft rounded-pill px-4 w-75">
+                                Check Updates <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignments Card -->
+                <div class="col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm rounded-3 hover-effect">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mx-auto mb-3" style="background-color: rgba(23, 162, 184, 0.1);">
+                                <i class="fas fa-file-alt fa-2x text-info"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Assignments</h5>
+                            <p class="text-muted mb-3">Submit and check your work</p>
+                            <a href="{{ url_for('assignments') }}" class="btn btn-info-soft rounded-pill px-4 w-75">
+                                View Tasks <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Card -->
+                <div class="col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm rounded-3 hover-effect">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mx-auto mb-3" style="background-color: rgba(220, 53, 69, 0.1);">
+                                <i class="fas fa-chart-line fa-2x text-danger"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Performance</h5>
+                            <p class="text-muted mb-3">Track your academic progress</p>
+                            <a href="{{ url_for('performance') }}" class="btn btn-danger-soft rounded-pill px-4 w-75">
+                                View Stats <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources Card -->
+                <div class="col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm rounded-3 hover-effect">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mx-auto mb-3" style="background-color: rgba(108, 117, 125, 0.1);">
+                                <i class="fas fa-book-open fa-2x text-secondary"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Study Resources</h5>
+                            <p class="text-muted mb-3">Access learning materials</p>
+                            <a href="{{ url_for('student_resources') }}" class="btn btn-secondary-soft rounded-pill px-4 w-75">
+                                Get Resources <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom CSS */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+    }
+    
+    .welcome-header {
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        animation: fadeInDown 0.8s ease;
+    }
+    
+    .profile-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .profile-img-container {
+        margin-top: -70px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .feature-card {
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .icon-container {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary-soft {
+        background-color: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+    }
+    
+    .btn-success-soft {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+    }
+    
+    .btn-warning-soft {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+    
+    .btn-info-soft {
+        background-color: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
+    }
+    
+    .btn-danger-soft {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+    
+    .btn-secondary-soft {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+    }
+    
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .welcome-header {
+            padding: 1.5rem;
+        }
+        
+        .profile-img-container {
+            margin-top: -60px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "student_side/student_base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card border-success shadow-lg">
+                <div class="card-header bg-success text-white py-4">
+                    <h2><i class="fas fa-check-circle fa-lg me-2"></i> Payment Successful</h2>
+                </div>
+                <div class="card-body py-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" alt="Success" width="100" class="mb-4" />
+                    <h4 class="card-title mb-3">Thank You!</h4>
+                    <p class="card-text fs-5">Your payment was processed successfully.</p>
+                    <p class="card-text text-muted">
+                        A receipt has been sent to your registered email.
+                    </p>
+
+                    {% if transaction_id %}
+                    <div class="alert alert-info mt-4">
+                        <strong>Transaction ID:</strong> {{ transaction_id }}
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4">
+                        <a href="{{ url_for('payment_history') }}" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-file-invoice-dollar me-2"></i> View Payment History
+                        </a>
+                        <a href="/" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="fas fa-home me-2"></i> Go to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'admin_side/admin_dashboard.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-file-upload me-2"></i> Upload New Resource</h4>
+                <a href="{{ url_for('manage_resources') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Resources
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show mb-4">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="title" name="title" required
+                           placeholder="Enter resource title" maxlength="100">
+                    <div class="form-text">Maximum 100 characters</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"
+                              placeholder="Enter resource description (optional)"></textarea>
+                    <div class="form-text">Briefly describe the resource content</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="course_id" class="form-label">Course (Optional)</label>
+                    <select class="form-select" id="course_id" name="course_id">
+                        <option value="">-- Select Course --</option>
+                        {% for course in courses %}
+                        <option value="{{ course.course_id }}">{{ course.course_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Select if this resource belongs to a specific course</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="file" class="form-label">File <span class="text-danger">*</span></label>
+                    <input type="file" class="form-control" id="file" name="file" required
+                           accept=".pdf,.txt,.doc,.docx">
+                    <div class="form-text">Allowed formats: PDF, TXT, DOC, DOCX (Max 16MB)</div>
+                    <div id="filePreview" class="mt-2 d-none">
+                        <i class="fas fa-file-pdf me-2 text-danger"></i>
+                        <span id="fileName"></span>
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="clearFile">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary py-2" id="submitBtn">
+                        <span id="submitText"><i class="fas fa-upload me-2"></i> Upload Resource</span>
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('file');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const clearFile = document.getElementById('clearFile');
+    const uploadForm = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const spinner = document.getElementById('spinner');
+
+    // File input change handler
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            const file = this.files[0];
+            fileName.textContent = file.name;
+            filePreview.classList.remove('d-none');
+            
+            // Set appropriate icon based on file type
+            const icon = filePreview.querySelector('i');
+            if (file.name.endsWith('.pdf')) {
+                icon.className = 'fas fa-file-pdf me-2 text-danger';
+            } else if (file.name.endsWith('.txt')) {
+                icon.className = 'fas fa-file-alt me-2 text-info';
+            } else if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
+                icon.className = 'fas fa-file-word me-2 text-primary';
+            }
+        }
+    });
+
+    // Clear file selection
+    clearFile.addEventListener('click', function() {
+        fileInput.value = '';
+        filePreview.classList.add('d-none');
+    });
+
+    // Form submission handler
+    uploadForm.addEventListener('submit', function() {
+        submitText.textContent = 'Uploading...';
+        spinner.classList.remove('d-none');
+        submitBtn.disabled = true;
+    });
+});
+</script>
+
+<style>
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    #filePreview {
+        background-color: #f8f9fa;
+        padding: 8px 12px;
+        border-radius: 8px;
+        align-items: center;
+    }
+    #clearFile {
+        padding: 0.15rem 0.3rem;
+    }
+</style>
+{% endblock %}

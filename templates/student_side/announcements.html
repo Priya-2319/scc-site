@@ -1,0 +1,104 @@
+{% extends 'student_side/student_base.html' %}
+
+{% block title %} Announcements {% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="announcement-header text-center mb-5">
+        <h1 class="display-5 fw-bold mb-3">📢 Announcements</h1>
+        <p class="lead text-muted">Stay updated with the latest news and announcements from your coaching center</p>
+    </div>
+
+    <!-- Announcements List -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if announcements %}
+                {% for announcement in announcements %}
+                <div class="card announcement-card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ announcement.title }}</h5>
+                        <span class="badge bg-light text-primary">{{ announcement.date_posted.strftime('%b %d, %Y') }}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Posted by: {{ announcement.posted_by }}</h6>
+                                <small class="text-muted">{{ announcement.date_posted.strftime('%I:%M %p') }}</small>
+                            </div>
+                        </div>
+                        <p class="card-text">{{ announcement.content }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bell-slash fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No announcements yet</h4>
+                    <p class="text-muted">Check back later for updates</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <a href="{{ url_for('student_dashboard') }}" class="btn rounded-pill px-4 py-2 shadow-sm" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border: none; transition: all 0.3s ease;">
+        <i class="fas fa-home me-2"></i> Go To Dashboard
+    </a>
+    
+    <style>
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(30, 60, 114, 0.3);
+        }
+    </style>
+</div>
+
+<style>
+    /* Custom CSS */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+    }
+    
+    .announcement-header {
+        animation: fadeInDown 0.8s ease;
+    }
+    
+    .announcement-card {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .announcement-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .announcement-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}

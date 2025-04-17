@@ -1,0 +1,31 @@
+{% extends 'admin_side/admin_dashboard.html' %}
+
+{% block title %} Edit Announcement {% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-primary"><i class="fas fa-edit"></i> Edit Announcement</h2>
+    <hr>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ announcement.title }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="content" class="form-label">Content:</label>
+            <textarea class="form-control" id="content" name="content" rows="4" required>{{ announcement.content }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> Save Changes
+        </button>
+        <a href="{{ url_for('view_notifications') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </form>
+</div>
+
+{% endblock %}
