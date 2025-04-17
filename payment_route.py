@@ -1,9 +1,14 @@
 from datetime import datetime
-from flask import request, jsonify, redirect, url_for, render_template, session, abort
+from flask import request, jsonify, redirect, url_for, render_template, session, abort, send_file, make_response, flash
 from app import app, db, razorpay_client
 from models import Payment, Course, Student
 from routes import login_required, student_required
 from dateutil.relativedelta import relativedelta
+from io import BytesIO, StringIO
+import csv
+from pagination import Pagination
+from werkzeug.security import check_password_hash
+from functools import wraps
 
 # for webhook
 import hmac
@@ -32,7 +37,7 @@ def payment_page():
                              next_months=next_months)
     except Exception as e:
         logger.error(f"Payment page error: {str(e)}")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('student_dashboard'))
 
 @app.route('/initiate-payment', methods=['POST'])
 @login_required
@@ -220,11 +225,92 @@ def payment_success():
 def payment_failed():
     return render_template('student_side/payment_failed.html')
 
-@app.route('/payment/history')
+@app.route("/student/payment-history")
 @login_required
 @student_required
 def payment_history():
-    payments = Payment.query.filter_by(student_id=session['user_id'])\
-                           .order_by(Payment.payment_date.desc())\
-                           .all()
-    return render_template('student_side/payment_history.html', payments=payments)
+    page = request.args.get('page', 1, type=int)
+    student_id = session.get('user_id')
+    
+    # Get all payments for the student, ordered by date
+    all_payments = Payment.query.filter_by(student_id=student_id)\
+                               .order_by(Payment.payment_date.desc())\
+                               .all()
+    
+    pagination = Pagination(all_payments, page=page, per_page=10)
+    payments_page = all_payments[pagination.start:pagination.end]
+    
+    return render_template(
+        'student_side/payment_history.html',
+        payments=payments_page,
+        pagination=pagination,
+        student_name=session.get('user_name')
+    )
+
+@app.route("/student/payment-receipt/<int:payment_id>")
+@login_required
+@student_required
+def payment_receipt(payment_id):
+    student_id = session.get('user_id')
+    payment = Payment.query.filter_by(
+        payment_id=payment_id,
+        student_id=student_id
+    ).first_or_404()
+    
+    student = Student.query.filter_by(student_id=student_id).first()
+    course = Course.query.filter_by(course_id=payment.course_id).first()
+    
+    return render_template(
+        'student_side/payment_receipt.html',
+        payment=payment,
+        student=student,
+        course=course,
+        now=datetime.now()
+    )
+
+@app.route("/student/export-payments")
+@login_required
+@student_required
+def export_payments():
+    student_id = session.get('user_id')
+    payments = Payment.query.filter_by(student_id=student_id)\
+                          .order_by(Payment.payment_date.desc())\
+                          .all()
+    
+    # Create CSV in memory as StringIO (instead of BytesIO)
+    output = StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow([
+        'Date', 'Amount', 'Type', 'For Month', 
+        'Course', 'Payment Method', 'Transaction ID', 'Status'
+    ])
+    
+    # Write data
+    for payment in payments:
+        course = Course.query.get(payment.course_id)
+        writer.writerow([
+            payment.payment_date.strftime('%Y-%m-%d %H:%M'),
+            f"Rs.- {payment.amount:.2f}",
+            payment.payment_type.replace('_', ' ').title(),
+            payment.for_month if payment.for_month else 'Full Course',
+            course.course_name,
+            payment.payment_method.title(),
+            payment.transaction_id,
+            payment.payment_status.capitalize()
+        ])
+    
+    output.seek(0)
+    
+    # Create BytesIO from the StringIO content
+    mem = BytesIO()
+    mem.write(output.getvalue().encode('utf-8'))
+    mem.seek(0)
+    
+    return send_file(
+        mem,
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name=f'payment_history_{datetime.now().date()}.csv'
+    )

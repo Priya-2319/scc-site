@@ -1,0 +1,126 @@
+{% extends "student_side/student_base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-receipt me-2 text-primary"></i>Payment Receipt
+        </h2>
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="fas fa-print me-1"></i> Print Receipt
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0">Payment Confirmation</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted">From</h6>
+                    <h4>Science Coaching Center</h4>
+                    <p class="mb-1">Belahi, Pandaul</p>
+                    <p class="mb-1">Madhubani, Bihar - 847231</p>
+                    <p class="mb-0">Contact No. : 9142125921</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h6 class="text-muted">To</h6>
+                    <h4>{{ student.name }}</h4>
+                    <p class="mb-1">Student ID: {{ student.student_id }}</p>
+                    <p class="mb-1">{{ student.email }}</p>
+                    <p class="mb-0">{{ student.phone }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Receipt No:</strong> {{ payment.payment_id }}</p>
+                    <p class="mb-1"><strong>Payment Date:</strong> {{ payment.payment_date.strftime('%d %b %Y %I:%M %p') }}</p>
+                    <p class="mb-0"><strong>Transaction ID:</strong> {{ payment.transaction_id }}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-1"><strong>Course:</strong> {{ course.course_name }}</p>
+                    <p class="mb-1"><strong>Payment Type:</strong> {{ payment.payment_type|replace('_', ' ')|title }}</p>
+                    {% if payment.for_month %}
+                    <p class="mb-0"><strong>For Month:</strong> {{ payment.for_month }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Description</th>
+                            <th class="text-end">Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {{ course.course_name }} - 
+                                {% if payment.payment_type == 'full_course' %}
+                                Full Course Fee
+                                {% else %}
+                                Monthly Fee for {{ payment.for_month if payment.for_month else 'Selected Month' }}
+                                {% endif %}
+                            </td>
+                            <td class="text-end">{{ "%.2f"|format(payment.amount) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-end fw-bold">Total</td>
+                            <td class="text-end fw-bold">{{ "%.2f"|format(payment.amount) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Payment Method:</strong> {{ payment.payment_method|title }}</p>
+                    <p class="mb-1"><strong>Order ID:</strong> {{ payment.order_id }}</p>
+                    {% if payment.razorpay_reference_id %}
+                    <p class="mb-0"><strong>Reference ID:</strong> {{ payment.razorpay_reference_id }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="border p-3 d-inline-block">
+                        <p class="mb-0 text-muted">Authorized Signature</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <p class="mb-0 text-muted small">
+                <i class="fas fa-info-circle me-1"></i> 
+                This is an computer generated receipt and does not require signature.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .card, .card * {
+            visibility: visible;
+        }
+        .card {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border: none;
+            box-shadow: none;
+        }
+        .btn {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}

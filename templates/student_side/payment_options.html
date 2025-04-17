@@ -1,83 +1,128 @@
 {% extends "student_side/student_base.html" %}
 
 {% block content %}
-<div class="container">
-    <h2 class="my-4">Make Payment</h2>
+<div class="container py-4">
+    <!-- Stylish Header -->
+    <div class="payment-header text-center mb-5">
+        <h2 class="payment-title gradient-text">
+            <i class="fas fa-credit-card me-2"></i> Make Payment
+        </h2>
+        <p class="payment-subtitle">Secure payment processing for your courses</p>
+    </div>
+
+    <!-- Payment History Button -->
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{{ url_for('payment_history') }}" class="btn btn-payment-history">
+            <i class="fas fa-history me-2"></i>View Payment History
+        </a>
+    </div>
     
-    <div class="row">
-        <div class="col-md-8 mx-auto">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
             <!-- Course Selection -->
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-dark text-white">
-                    <h4><i class="fas fa-book me-2"></i>Select Course</h4>
+            <div class="card payment-card mb-4">
+                <div class="card-header payment-card-header">
+                    <h4 class="payment-card-title"><i class="fas fa-book me-2"></i>Select Course</h4>
                 </div>
                 <div class="card-body">
-                    <select class="form-select form-select-lg mb-3" id="course-select">
-                        <option value="">-- Select Course --</option>
-                        {% for course in courses %}
-                        <option value="{{ course.course_id }}" 
-                                data-monthly-fee="{{ course.monthly_fee }}"
-                                data-full-fee="{{ course.full_fee }}"
-                                data-duration="{{ course.duration_months }}">
-                            {{ course.course_name }} (₹{{ course.monthly_fee }}/month)
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <!-- Current Month Payment -->
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4><i class="fas fa-calendar-alt me-2"></i>Current Month Payment</h4>
-                </div>
-                <div class="card-body">
-                    <p class="fs-4">Amount: ₹<span id="current-month-amount">0</span></p>
-                    <button class="btn btn-primary btn-lg w-100" id="pay-current-month" disabled>
-                        <i class="fas fa-credit-card me-2"></i>Pay Now
-                    </button>
-                </div>
-            </div>
-
-            <!-- Full Course Payment -->
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h4><i class="fas fa-certificate me-2"></i>Full Course Payment</h4>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="fs-4 mb-0">Amount: ₹<span id="full-course-amount">0</span></p>
-                        <span class="badge bg-warning text-dark">
-                            Save ₹<span id="discount-amount">0</span>
-                        </span>
+                    <div class="form-floating">
+                        <select class="form-select" id="course-select">
+                            <option value="">-- Select Course --</option>
+                            {% for course in courses %}
+                            <option value="{{ course.course_id }}" 
+                                    data-monthly-fee="{{ course.monthly_fee }}"
+                                    data-full-fee="{{ course.full_fee }}"
+                                    data-duration="{{ course.duration_months }}">
+                                {{ course.course_name }} (₹{{ course.monthly_fee }}/month)
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <label for="course-select">Choose your course</label>
                     </div>
-                    <button class="btn btn-success btn-lg w-100" id="pay-full-course" disabled>
-                        <i class="fas fa-money-bill-wave me-2"></i>Pay Full Amount
-                    </button>
                 </div>
             </div>
 
-            <!-- Select Month Payment -->
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-info text-white">
-                    <h4><i class="fas fa-calendar-check me-2"></i>Select Month Payment</h4>
+            <!-- Payment Options -->
+            <div class="row g-4">
+                <!-- Current Month Payment -->
+                <div class="col-md-6">
+                    <div class="card payment-option-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="payment-icon me-3">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <h5 class="payment-option-title mb-0">Current Month</h5>
+                            </div>
+                            <p class="payment-amount">₹<span id="current-month-amount">0</span></p>
+                            <button class="btn btn-payment w-100" id="pay-current-month" disabled>
+                                <i class="fas fa-credit-card me-2"></i>Pay Now
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <select class="form-select form-select-lg mb-3" id="month-select">
-                        {% for month in next_months %}
-                        <option value="{{ month }}">{{ month }}</option>
-                        {% endfor %}
-                    </select>
-                    <p class="fs-4">Amount: ₹<span id="selected-month-amount">0</span></p>
-                    <button class="btn btn-info btn-lg w-100" id="pay-selected-month" disabled>
-                        <i class="fas fa-calendar-plus me-2"></i>Pay Selected Month
-                    </button>
+
+                <!-- Full Course Payment -->
+                <div class="col-md-6">
+                    <div class="card payment-option-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="payment-icon me-3">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <h5 class="payment-option-title mb-0">Full Course</h5>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <p class="payment-amount mb-0">₹<span id="full-course-amount">0</span></p>
+                                <span class="badge bg-savings">
+                                    Save ₹<span id="discount-amount">0</span>
+                                </span>
+                            </div>
+                            <button class="btn btn-payment w-100" id="pay-full-course" disabled>
+                                <i class="fas fa-money-bill-wave me-2"></i>Pay Full Amount
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Select Month Payment -->
+                <div class="col-12">
+                    <div class="card payment-option-card">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="payment-icon me-3">
+                                            <i class="fas fa-calendar-check"></i>
+                                        </div>
+                                        <h5 class="payment-option-title mb-0">Select Month</h5>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <select class="form-select" id="month-select">
+                                        {% for month in next_months %}
+                                        <option value="{{ month }}">{{ month }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center justify-content-md-end">
+                                        <p class="payment-amount mb-0 me-3">₹<span id="selected-month-amount">0</span></p>
+                                        <button class="btn btn-payment" id="pay-selected-month" disabled>
+                                            <i class="fas fa-calendar-plus me-2"></i>Pay
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Keep all existing JavaScript exactly the same -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -228,25 +273,162 @@
 </script>
 
 <style>
-    .btn-lg {
-        padding: 0.75rem 1.5rem;
-        font-size: 1.1rem;
-        font-weight: 500;
+    /* Main Styles */
+    .payment-header {
+        padding-bottom: 1rem;
     }
-    .form-select-lg {
-        padding: 0.75rem 1.5rem;
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #6a1b9a, #9c27b0);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
+    }
+    
+    .payment-subtitle {
+        color: #6c757d;
         font-size: 1.1rem;
     }
-    .card {
-        border-radius: 12px;
+    
+    /* Cards */
+    .payment-card {
         border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease;
     }
-    .card-header {
+    
+    .payment-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .payment-card-header {
+        background: linear-gradient(135deg, #343a40, #495057);
+        color: white;
         border-radius: 12px 12px 0 0 !important;
-        font-weight: 600;
+        padding: 1rem 1.5rem;
     }
-    .fs-4 {
+    
+    .payment-card-title {
+        margin-bottom: 0;
+        font-size: 1.2rem;
+    }
+    
+    /* Payment Options */
+    .payment-option-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .payment-option-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .payment-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(106, 27, 154, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6a1b9a;
+        font-size: 1.25rem;
+    }
+    
+    .payment-option-title {
         font-weight: 600;
+        color: #343a40;
+    }
+    
+    .payment-amount {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #6a1b9a;
+        margin: 1rem 0;
+    }
+    
+    /* Buttons */
+    .btn-payment-history {
+        background: #6a1b9a;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-payment-history:hover {
+        background: #9c27b0;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(154, 27, 154, 0.2);
+    }
+    
+    .btn-payment {
+        background: linear-gradient(135deg, #6a1b9a, #9c27b0);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-payment:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(154, 27, 154, 0.3);
+    }
+    
+    .btn-payment:disabled {
+        background: #e9ecef;
+        color: #6c757d;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    /* Badge */
+    .bg-savings {
+        background-color: #fff3cd;
+        color: #856404;
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+        border-radius: 50px;
+    }
+    
+    /* Form Elements */
+    .form-floating label {
+        color: #6c757d;
+    }
+    
+    .form-select {
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .form-select:focus {
+        border-color: #9c27b0;
+        box-shadow: 0 0 0 0.25rem rgba(156, 39, 176, 0.25);
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 767.98px) {
+        .payment-option-title {
+            font-size: 1rem;
+        }
+        
+        .payment-amount {
+            font-size: 1.5rem;
+        }
+        
+        .btn-payment {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
     }
 </style>
 {% endblock %}
