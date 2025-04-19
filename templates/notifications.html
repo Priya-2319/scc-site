@@ -10,8 +10,8 @@
     <p class="text-center text-muted">Stay updated with important news!</p>
 
     <div class="table-responsive">
-        <table class="table table-hover shadow-sm rounded mt-4">
-            <thead class="text-white" style="background: linear-gradient(90deg, #043c5c, #8706ba);">
+        <table class="table table-hover shadow-sm rounded mt-4" style="border-radius: 20px; overflow: hidden;">
+            <thead class="text-white" style="background: linear-gradient(90deg, #59063e, #960707);">
                 <tr>
                     <th class="p-3">S.No.</th>
                     <th class="p-3">Title</th>
@@ -20,7 +20,7 @@
                     <th class="p-3">Posted By</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody style="background-color: #4cc0e3;">
                 {% for announcement in announcements %}
                 <tr class="{% if loop.index is even %}table-light{% endif %}">
                     <td>{{ loop.index }}</td>
@@ -31,9 +31,9 @@
                 </tr>
 
                 <!-- Modal for Announcement Details -->
-                <div class="modal fade" id="notifModal{{ loop.index }}" tabindex="-1" aria-labelledby="notifLabel{{ loop.index }}" aria-hidden="true">
+                <div class="modal fade" id="notifModal{{ loop.index }}" tabindex="-1" aria-labelledby="notifLabel{{ loop.index }}" aria-hidden="true" style="color: #40045c;">
                     <div class="modal-dialog">
-                        <div class="modal-content">
+                        <div class="modal-content"  style="background-color: #b4db68;">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="notifLabel{{ loop.index }}">{{ announcement.title }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0"><i class="fas fa-user-graduate me-2"></i> Manage Enrollments</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-4 ms-3">
+        <h2 class="mb-0" style="color: aquamarine;"><i class="fas fa-user-graduate me-2"></i> Manage Enrollments</h2>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -107,6 +107,9 @@
                 </table>
             </div>
         </div>
+    </div>
+    <div class="text-center">
+        <a href="{{ url_for('admin_dashboard') }}" class="mt-3 btn btn-secondary">Go Back To Dashboard</a>
     </div>
 </div>
 {% endblock %}

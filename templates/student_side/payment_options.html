@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class="container py-4">
-    <!-- Stylish Header -->
-    <div class="payment-header text-center mb-5">
-        <h2 class="payment-title gradient-text">
-            <i class="fas fa-credit-card me-2"></i> Make Payment
-        </h2>
-        <p class="payment-subtitle">Secure payment processing for your courses</p>
+
+    <!-- Header Section -->
+    <div class="announcement-header text-center mb-5">
+        <h1 class="display-5 fw-bold mb-3" style="color: rgb(223, 47, 176);"><i class="fas fa-credit-card me-2"></i> Make Payments</h1>
+        <p class="lead" style="color: rgb(200, 207, 19);">Secure payment processing for your courses.</p>
     </div>
+    
 
     <!-- Payment History Button -->
     <div class="d-flex justify-content-end mb-4">
@@ -273,9 +273,27 @@
 </script>
 
 <style>
-    /* Main Styles */
-    .payment-header {
-        padding-bottom: 1rem;
+    .announcement-header {
+        animation: fadeInDown 0.8s ease;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .animate-gradient {
+            font-size: 1.8rem;
+            animation-duration: 6s;
+        }
     }
     
     .gradient-text {

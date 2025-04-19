@@ -5,125 +5,343 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    /* Enhanced styling */
+    .about-header {
+        background: linear-gradient(135deg, #c91e90, #2b12a8);
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        border-radius: 0 0 20px 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .director-section {
+        background: rgb(232, 107, 170);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgb(5, 86, 32);
+        padding: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .institute-details {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .detail-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+    
+    .detail-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    /* Achievers slider */
+    .achievers-container {
+        overflow: hidden;
+        position: relative;
+        margin: 3rem 0;
+    }
+    
+    .achievers-slider {
+        display: flex;
+        transition: transform 0.5s ease;
+        padding-bottom: 20px;
+    }
+    
+    .achiever-card {
+        flex: 0 0 25%;
+        padding: 0 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .achiever-card:hover {
+        transform: scale(1.05);
+    }
+    
+    .achiever-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin: 0 auto;
+    }
+    
+    .testimonial-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin-top: 1rem;
+        position: relative;
+    }
+    
+    .testimonial-card::before {
+        content: '"';
+        font-size: 5rem;
+        color: rgba(0,0,0,0.05);
+        position: absolute;
+        top: -1rem;
+        left: 0.5rem;
+    }
+    
+    /* Animation for slider */
+    @keyframes slideRightToLeft {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+    }
+    
+    .slider-animate {
+        animation: slideRightToLeft 30s linear infinite;
+    }
+    
+    /* Terms section */
+    .terms-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+</style>
 
-<!-- About Us Heading -->
-<div class="container text-center mt-4">
-    <h2 class="fw-bold">About Science Coaching Center</h2>
-    <p class="text-muted">Empowering students with knowledge & success!</p>
+<!-- Enhanced About Header -->
+<div class="about-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold animate__animated animate__fadeInDown">About Science Coaching Center</h1>
+        <p class="lead animate__animated animate__fadeIn animate__delay-1s">Empowering students with knowledge & success since 2005</p>
+    </div>
 </div>
 
 <!-- Director's Section -->
-<div class="container my-5">
+<div class="container director-section animate__animated animate__fadeIn">
     <div class="row align-items-center">
         <div class="col-md-4 text-center">
-            <img src="{{ url_for('static', filename='images/director.jpeg') }}" class="img-fluid rounded-circle shadow-lg" width="250" height="250" alt="Director">
+            <img src="{{ url_for('static', filename='images/director.jpeg') }}" 
+                 class="img-fluid rounded-circle shadow-lg" 
+                 width="250" 
+                 alt="Director"
+                 style="border: 5px solid #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
         </div>
         <div class="col-md-8">
-            <h3 class="fw-bold">Message from Our Director</h3>
-            <p class="lead">
-                "At Science Coaching Center, we believe in providing quality education that shapes the future of our students.  
-                Our goal is to ensure that every student achieves academic excellence and personal growth."  
-                <br><br>– <b>Dr. Ankit Kumar</b>, Director
-            </p>
+            <h2 class="fw-bold text-primary">Message from Our Director</h2>
+            <div class="director-message" style="color: #f0dc27;">
+                <p class="lead" style="font-size: 1.2rem; line-height: 1.8;">
+                    "At Science Coaching Center, we don't just teach subjects - we build futures. Our holistic approach combines academic excellence with personal development to create well-rounded individuals ready to face any challenge."
+                </p>
+                <p class="lead" style="font-size: 1.2rem; line-height: 1.8;">
+                    "With our dedicated faculty, innovative teaching methods, and personalized attention, we've helped thousands of students achieve their dreams. Your success is our greatest achievement."
+                </p>
+                <p class="h5 mt-4">
+                    <span class="text-primary fw-bold">Dr. Ankit Kumar</span><br>
+                    <span style="color: #5c044f">Founder & Director</span>
+                </p>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Institute Details -->
-<div class="container my-5 text-center">
-    <h3 class="fw-bold">About Our Institute</h3>
-    <p class="text-muted">Science Coaching Center is a leading institution for competitive exams and academic coaching. We offer expert guidance and a result-oriented approach.</p>
+<div class="container institute-details animate__animated animate__fadeIn">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">Our Institute at a Glance</h2>
+        <div class="divider bg-primary mx-auto my-3" style="width: 80px; height: 4px;"></div>
+        <p class="lead" style="color: #110552;">A legacy of excellence in science education</p>
+    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-4">
-            <h5 class="fw-bold">Established</h5>
-            <p>2005</p>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="detail-card text-center">
+                <i class="fas fa-calendar-alt fa-3x text-primary mb-3"></i>
+                <h4 class="fw-bold" style="color: #8706ba;">Established</h4>
+                <p class="h2 fw-bold text-primary">2005</p>
+                <p style="color: #c91e90;">18+ years of educational excellence</p>
+            </div>
         </div>
-        <div class="col-md-4">
-            <h5 class="fw-bold">Courses Offered</h5>
-            <p>NEET, JEE, Board Exams, Foundation Courses</p>
+        <div class="col-md-4 mb-4">
+            <div class="detail-card text-center">
+                <i class="fas fa-book-open fa-3x text-primary mb-3"></i>
+                <h4 class="fw-bold" style="color: #8706ba;">Courses Offered</h4>
+                <ul class="list-unstyled" style="color: #c91e90;">
+                    <li>NEET Preparation</li>
+                    <li>JEE Main & Advanced</li>
+                    <li>Board Exam Excellence</li>
+                    <li>Foundation Courses</li>
+                </ul>
+            </div>
         </div>
-        <div class="col-md-4">
-            <h5 class="fw-bold">Success Rate</h5>
-            <p>85%+ Selections Every Year</p>
+        <div class="col-md-4 mb-4">
+            <div class="detail-card text-center">
+                <i class="fas fa-trophy fa-3x text-primary mb-3"></i>
+                <h4 class="fw-bold" style="color: #8706ba;">Success Rate</h4>
+                <p class="h2 fw-bold text-primary">85%+</p>
+                <p style="color: #c91e90;">Selections every year in top institutions</p>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Achievers Section -->
-<div class="container my-5">
-    <h3 class="fw-bold text-center">Our Achievers</h3>
-    <p class="text-center text-muted">Meet our top-performing students who have excelled in various exams.</p>
-
-    <div class="row text-center mt-4">
-        <div class="col-md-3">
-            <img src="{{ url_for('static', filename='images/achiver1.jpeg') }}" class="img-fluid rounded shadow" alt="Topper 1">
-            <h5 class="mt-2">Rahul Sharma</h5>
-            <p>JEE Rank - 105</p>
-        </div>
-        <div class="col-md-3">
-            <img src="{{ url_for('static', filename='images/achiver2.png') }}" class="img-fluid rounded shadow" alt="Topper 2">
-            <h5 class="mt-2">Priya Verma</h5>
-            <p>NEET Rank - 56</p>
-        </div>
-        <div class="col-md-3">
-            <img src="{{ url_for('static', filename='images/achiver3.png') }}" class="img-fluid rounded shadow" alt="Topper 3">
-            <h5 class="mt-2">Amit Kumar</h5>
-            <p>Board - 98%</p>
-        </div>
-        <div class="col-md-3">
-            <img src="{{ url_for('static', filename='images/achiver4.jpeg') }}" class="img-fluid rounded shadow" alt="Topper 4">
-            <h5 class="mt-2">Neha Singh</h5>
-            <p>JEE Rank - 210</p>
-        </div>
+<!-- Achievers Section with Slider -->
+<div class="container animate__animated animate__fadeIn">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">Our Star Achievers</h2>
+        <div class="divider bg-primary mx-auto my-3" style="width: 80px; height: 4px;"></div>
+        <p class="lead">Students who made us proud with their outstanding results</p>
     </div>
-</div>
 
-<!-- Achievers Section -->
-<div class="container my-5">
-    <h3 class="fw-bold text-center">Our Achievers</h3>
-    <p class="text-center text-muted">Meet our top-performing students who have excelled in various exams.</p>
-
-    <div class="row text-center mt-4">
-        <div class="col-md-3">
-            <img src="{{ url_for('static', filename='images/achiver1.jpeg') }}" class="img-fluid rounded shadow" alt="Topper 1">
-            <h5 class="mt-2">Rahul Sharma</h5>
-            <p>JEE Rank - 105</p>
-        </div>
-        <div class="col-md-3">
-            <img src="{{ url_for('static', filename='images/achiver2.png') }}" class="img-fluid rounded shadow" alt="Topper 2">
-            <h5 class="mt-2">Priya Verma</h5>
-            <p>NEET Rank - 56</p>
-        </div>
-        <div class="col-md-3">
-            <img src="{{ url_for('static', filename='images/achiver3.png') }}" class="img-fluid rounded shadow" alt="Topper 3">
-            <h5 class="mt-2">Amit Kumar</h5>
-            <p>Board - 98%</p>
-        </div>
-        <div class="col-md-3">
-            <img src="{{ url_for('static', filename='images/achiver4.jpeg') }}" class="img-fluid rounded shadow" alt="Topper 4">
-            <h5 class="mt-2">Neha Singh</h5>
-            <p>JEE Rank - 210</p>
+    <div class="achievers-container">
+        <div class="achievers-slider slider-animate">
+            <!-- Achiever 1 -->
+            <div class="achiever-card text-center">
+                <img src="{{ url_for('static', filename='images/achiver1.jpeg') }}" 
+                     class="achiever-img mb-3" 
+                     alt="Topper 1">
+                <h4 class="fw-bold">Rahul Sharma</h4>
+                <p class="text-primary fw-bold">JEE Advanced Rank - 105</p>
+                <div class="testimonial-card" style="color: #8706ba;">
+                    <p>"The faculty's problem-solving approach was game-changing. Regular mock tests gave me the confidence to crack JEE with a top rank!"</p>
+                </div>
+            </div>
+            
+            <!-- Achiever 2 -->
+            <div class="achiever-card text-center">
+                <img src="{{ url_for('static', filename='images/achiver2.png') }}" 
+                     class="achiever-img mb-3" 
+                     alt="Topper 2">
+                <h4 class="fw-bold">Priya Verma</h4>
+                <p class="text-primary fw-bold">NEET Rank - 56</p>
+                <div class="testimonial-card" style="color: #8706ba;">
+                    <p>"Biology faculty's diagrams and notes were incredibly helpful. The regular doubt sessions ensured I understood every concept thoroughly."</p>
+                </div>
+            </div>
+            
+            <!-- Achiever 3 -->
+            <div class="achiever-card text-center">
+                <img src="{{ url_for('static', filename='images/achiver3.png') }}" 
+                     class="achiever-img mb-3" 
+                     alt="Topper 3">
+                <h4 class="fw-bold">Amit Kumar</h4>
+                <p class="text-primary fw-bold">CBSE Board - 98%</p>
+                <div class="testimonial-card" style="color: #8706ba;">
+                    <p>"The chapter-wise revision strategy and sample paper practice helped me score 98% in Boards. Thank you Science Coaching Center!"</p>
+                </div>
+            </div>
+            
+            <!-- Achiever 4 -->
+            <div class="achiever-card text-center">
+                <img src="{{ url_for('static', filename='images/achiver4.jpeg') }}" 
+                     class="achiever-img mb-3" 
+                     alt="Topper 4">
+                <h4 class="fw-bold">Neha Singh</h4>
+                <p class="text-primary fw-bold">JEE Main Rank - 210</p>
+                <div class="testimonial-card" style="color: #8706ba;">
+                    <p>"The personalized attention and small batch size made all the difference. Teachers identified my weak areas and helped me improve."</p>
+                </div>
+            </div>
+            
+            <!-- Duplicate cards for infinite loop effect -->
+            <div class="achiever-card text-center">
+                <img src="{{ url_for('static', filename='images/achiver1.jpeg') }}" 
+                     class="achiever-img mb-3" 
+                     alt="Topper 1">
+                <h4 class="fw-bold">Rahul Sharma</h4>
+                <p class="text-primary fw-bold">JEE Advanced Rank - 105</p>
+                <div class="testimonial-card" style="color: #8706ba;">
+                    <p>"The faculty's problem-solving approach was game-changing. Regular mock tests gave me the confidence to crack JEE with a top rank!"</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Terms & Policies Section -->
-<div class="container my-5">
-    <h3 class="fw-bold text-center">Terms & Policies</h3>
-    <div class="card p-4 shadow">
-        <p><b>1. Admission Policy:</b> Admission is based on entrance tests & eligibility criteria.</p>
-        <p><b>2. Fee Policy:</b> Fees once paid are non-refundable under any circumstances.</p>
-        <p><b>3. Code of Conduct:</b> Students are expected to maintain discipline at all times.</p>
-        <p><b>4. Privacy Policy:</b> Student data will be kept confidential & not shared with third parties.</p>
+<div class="container terms-section animate__animated animate__fadeIn">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Our Policies</h2>
+        <div class="divider bg-primary mx-auto my-3" style="width: 80px; height: 4px;"></div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-graduate me-2"></i> Admission Policy</h5>
+                </div>
+                <div class="card-body">
+                    <p>Admission is based on entrance tests conducted by the institute. Eligibility criteria vary by course. We maintain small batch sizes to ensure personalized attention.</p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-lock me-2"></i> Privacy Policy</h5>
+                </div>
+                <div class="card-body">
+                    <p>All student data is kept strictly confidential. We never share information with third parties without consent. Our digital platforms use secure encryption.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-rupee-sign me-2"></i> Fee Policy</h5>
+                </div>
+                <div class="card-body">
+                    <p>Fees are non-refundable once paid. Installment plans available for selected courses. Scholarships offered to meritorious students.</p>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i> Code of Conduct</h5>
+                </div>
+                <div class="card-body">
+                    <p>Students must maintain discipline, respect faculty, and follow institute timings. Mobile phones prohibited in classrooms. Regular attendance mandatory.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Footer -->
-<footer class="footer text-center mt-5 p-3 text-white" style="background: linear-gradient(90deg, #043c5c, #8706ba);">
+<footer class="footer text-center mt-5 p-4 text-white" style="background: linear-gradient(135deg, #043c5c, #8706ba);">
     <div class="container">
-        <p>© 2025 Science Coaching Center. All Rights Reserved.</p>
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Quick Links</h5>
+                <a href="{{ url_for('home') }}" class="text-warning">Home</a> |
+                <a href="{{ url_for('about') }}" class="text-warning">About</a> |
+                <a href="{{ url_for('contact') }}" class="text-warning">Contact</a>
+            </div>
+            <div class="col-md-4">
+                <h5>Contact Us</h5>
+                <p><i class="fas fa-phone me-2"></i> +91 9876543210</p>
+                <p><i class="fas fa-envelope me-2"></i> info@sciencecoaching.com</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Follow Us</h5>
+                <a href="#" class="text-white me-3"><i class="fab fa-facebook-f fa-lg"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-youtube fa-lg"></i></a>
+            </div>
+        </div>
+        <hr class="my-3">
+        <p class="mb-0">© 2025 Science Coaching Center. All Rights Reserved.</p>
     </div>
 </footer>
+
+<!-- Include animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
 
 {% endblock %}

@@ -10,6 +10,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/admin_bg_image.jpg') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+    </style>
+
 </head>
 <body>
 
@@ -23,7 +33,7 @@
 
     <!-- Footer -->
     <footer class="bg-dark text-center text-white py-3 mt-4">
-        <p>&copy; 2025 Science Coaching Center | All Rights Reserved</p>
+        <p style="color: yellow;">&copy; 2025 Science Coaching Center | All Rights Reserved</p>
     </footer>
 
     <!-- Bootstrap JS -->

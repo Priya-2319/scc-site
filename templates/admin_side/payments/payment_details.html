@@ -1,0 +1,131 @@
+{% extends "admin_side/admin_dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{{ url_for('manage_payments') }}" class="btn btn-light">
+            <i class="fas fa-arrow-left me-2"></i> Back to Payments
+        </a>
+    </div>
+
+    <!-- Payment Details Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-info-circle me-1"></i> Payment Details
+            </h6>
+            <div>
+                <a href="{{ url_for('generate_receipt', payment_id=payment.payment_id) }}" 
+                   class="btn btn-sm btn-info" target="_blank">
+                    <i class="fas fa-receipt me-1"></i> Generate Receipt
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">Transaction ID</th>
+                                    <td>{{ payment.transaction_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="w-25">Order ID</th>
+                                    <td>{{ payment.order_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Student</th>
+                                    <td>
+                                        {{ payment.student.name }} (ID: {{ payment.student_id }})
+                                        <br>
+                                        <small class="text-muted">{{ payment.student.email }}</small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Payment Date</th>
+                                    <td>{{ payment.payment_date.strftime('%d %b %Y %H:%M:%S') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Amount</th>
+                                    <td class="font-weight-bold">₹{{ "%.2f"|format(payment.amount) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th class="w-25">Payment Type</th>
+                                    <td>{{ payment.payment_type|replace('_', ' ')|title }}  <strong> (" {{ payment.for_month }} ") </strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Course</th>
+                                    <td>
+                                        {{ payment.course.course_name if payment.course else 'N/A' }}
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ payment.course.course_name if payment.course else '' }}
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td>
+                                        {% if payment.payment_status == 'completed' %}
+                                        <span class="badge badge-success text-success">
+                                            <i class="fas fa-check-circle me-1"></i> Completed
+                                        </span>
+                                        {% elif payment.payment_status == 'pending' %}
+                                        <span class="badge badge-warning" style="color: rgb(15, 83, 186);">
+                                            <i class="fas fa-clock me-1"></i> Pending
+                                        </span>
+                                        {% else %}
+                                        <span class="badge badge-danger text-danger">
+                                            <i class="fas fa-times-circle me-1"></i> Failed
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Payment Method</th>
+                                    <td>{{ payment.payment_method|default('N/A')|title }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="mt-4">
+                <h5 class="font-weight-bold mb-3">
+                    <i class="fas fa-file-invoice me-2"></i> Additional Information
+                </h5>
+                <div class="bg-light p-4 rounded">
+                    {% if payment.notes %}
+                        <p>{{ payment.notes }}</p>
+                    {% else %}
+                        <p class="text-muted">No additional information available for this payment.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-4 d-flex justify-content-end">
+                {% if payment.payment_status == 'pending' %}
+                <a href="{{ url_for('mark_payment_complete', payment_id=payment.payment_id) }}" 
+                   class="btn btn-success mr-2">
+                    <i class="fas fa-check me-1"></i> Mark as Complete
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

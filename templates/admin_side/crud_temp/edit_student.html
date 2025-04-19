@@ -14,40 +14,62 @@
                     <form method="POST" action="{{ url_for('edit_student', student_id=student.student_id) }}">
                         <div class="mb-3">
                             <label for="student_id" class="form-label">Student ID</label>
-                            <input type="text" class="form-control" id="student_id" 
-                                   value="{{ student.student_id }}" readonly>
+                            <input type="text" class="form-control" id="student_id" value="{{ student.student_id }}"
+                                readonly>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="name" name="name" 
-                                   value="{{ student.name }}" required>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ student.name }}"
+                                required>
                         </div>
-                        
+
+                        <!-- for gender -->
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="male" value="Male" {%
+                                        if student.gender=='Male' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="male">Male</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="female"
+                                        value="Female" {% if student.gender=='Female' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="female">Female</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- for date of birth -->
+                        <div class="mb-3">
+                            <label for="dob" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="dob" name="dob" value="{{ student.dob }}" required>
+                        </div>
+
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   value="{{ student.email }}" required>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ student.email }}"
+                                required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" 
-                                   value="{{ student.phone }}" required>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ student.phone }}"
+                                required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="password" class="form-label">New Password (leave blank to keep current)</label>
                             <input type="password" class="form-control" id="password" name="password">
                             <div class="form-text">Minimum 8 characters</div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label class="form-label">Registration Date</label>
-                            <input type="text" class="form-control" 
-                                   value="{{ student.date_registered.strftime('%Y-%m-%d %H:%M') }}" readonly>
+                            <input type="text" class="form-control"
+                                value="{{ student.date_registered.strftime('%Y-%m-%d %H:%M') }}" readonly>
                         </div>
-                        
+
                         <div class="d-flex justify-content-between">
                             <a href="{{ url_for('view_students') }}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left me-2"></i> Back to List

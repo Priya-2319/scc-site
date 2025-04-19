@@ -11,7 +11,7 @@
         <!-- Toggle Button for Mobile -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-list text-white fs-3"></i>
+            <i class="bi bi-list text-white fs-5"></i>
         </button>
 
         <!-- Navbar Links & Search Bar -->
@@ -30,8 +30,13 @@
                     <a class="nav-link text-light" href="{{ url_for('manage_resources') }}">Resources</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-light" href="{{ url_for('manage_payments') }}">Payments</a>
+                </li>
+                
+                <li class="nav-item">
                     <a class="nav-link text-light" href="{{ url_for('logout') }}">Logout</a>
                 </li>
+
             </ul>
 
             <!-- Search Bar -->

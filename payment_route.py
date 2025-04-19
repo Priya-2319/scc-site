@@ -1,14 +1,19 @@
 from datetime import datetime
-from flask import request, jsonify, redirect, url_for, render_template, session, abort, send_file, make_response, flash
+from flask import request, jsonify, redirect, url_for, render_template, session, abort, send_file, make_response, flash, current_app
 from app import app, db, razorpay_client
 from models import Payment, Course, Student
-from routes import login_required, student_required
+from routes import login_required, student_required, admin_required
 from dateutil.relativedelta import relativedelta
 from io import BytesIO, StringIO
 import csv
 from pagination import Pagination
 from werkzeug.security import check_password_hash
 from functools import wraps
+from xhtml2pdf import pisa
+from io import BytesIO
+from sqlalchemy.orm import joinedload
+import os
+
 
 # for webhook
 import hmac
@@ -76,6 +81,7 @@ def initiate_payment():
         new_payment = Payment(
             student_id=student_id,
             amount=amount,
+            payment_date=datetime.now(),
             payment_type=payment_type,
             for_month=for_month,
             course_id=course_id,
@@ -247,26 +253,6 @@ def payment_history():
         student_name=session.get('user_name')
     )
 
-@app.route("/student/payment-receipt/<int:payment_id>")
-@login_required
-@student_required
-def payment_receipt(payment_id):
-    student_id = session.get('user_id')
-    payment = Payment.query.filter_by(
-        payment_id=payment_id,
-        student_id=student_id
-    ).first_or_404()
-    
-    student = Student.query.filter_by(student_id=student_id).first()
-    course = Course.query.filter_by(course_id=payment.course_id).first()
-    
-    return render_template(
-        'student_side/payment_receipt.html',
-        payment=payment,
-        student=student,
-        course=course,
-        now=datetime.now()
-    )
 
 @app.route("/student/export-payments")
 @login_required
@@ -314,3 +300,136 @@ def export_payments():
         as_attachment=True,
         download_name=f'payment_history_{datetime.now().date()}.csv'
     )
+
+@app.route('/admin/manage/payments', methods=['GET'])
+@login_required
+@admin_required
+def manage_payments():
+    page = request.args.get('page', 1, type=int)
+    
+    # Query payments with joined student and course data
+    all_payments = Payment.query \
+        .join(Student, Student.student_id == Payment.student_id) \
+        .join(Course, Course.course_id == Payment.course_id) \
+        .order_by(Payment.payment_date.desc()) \
+        .all()
+    
+    pagination = Pagination(all_payments, page=page, per_page=10)
+    payments_page = all_payments[pagination.start:pagination.end]
+    
+    return render_template(
+        'admin_side/payments/manage_payments.html',
+        payments=payments_page,
+        pagination=pagination
+    )
+
+@app.route('/payments/<int:payment_id>')
+@login_required
+@admin_required
+def payment_details(payment_id):
+    payment = Payment.query.get_or_404(payment_id)
+    return render_template('admin_side/payments/payment_details.html', payment=payment)
+
+@app.route('/payments/<int:payment_id>/receipt')
+@login_required
+@admin_required
+def generate_receipt(payment_id):
+    payment = Payment.query.get_or_404(payment_id)
+    html = render_template('admin_side/payments/receipt_template.html', payment=payment)
+    
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    
+    if not pdf.err:
+        response = make_response(result.getvalue())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'inline; filename=receipt_{payment.transaction_id}.pdf'
+        return response
+    
+    return "Error generating PDF", 500
+
+@app.route('/student/payment_id/<int:payment_id>/receipt')
+@login_required
+@student_required
+def payment_receipt(payment_id):
+    payment = Payment.query.get_or_404(payment_id)
+    html = render_template('student_side/payment_receipt.html', payment=payment)
+    
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    
+    if not pdf.err:
+        response = make_response(result.getvalue())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'inline; filename=receipt_{payment.transaction_id}.pdf'
+        return response
+    
+    return "Error generating PDF", 500
+
+@app.route('/export/payments/pdf')
+@login_required
+@admin_required
+def export_all_payments_pdf():
+    payments = Payment.query.order_by(Payment.payment_date.desc()).all()
+    now = datetime.now().strftime('%d-%m-%Y %H:%M')
+    html = render_template('admin_side/payments/payments_list_template.html', payments=payments, now=now)
+    
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    
+    if not pdf.err:
+        response = make_response(result.getvalue())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'inline; filename=all_payments.pdf'
+        return response
+
+    return "Error generating PDF", 500
+
+@app.route('/make_payment_complete/<int:payment_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def make_payment_complete(payment_id):
+    payment = Payment.query.get_or_404(payment_id)
+    payment.payment_method = 'MANUAL'
+    payment.payment_date = datetime.now()
+    payment.payment_status = 'completed'
+    db.session.commit()
+    flash('Payment marked as complete', 'success')
+    return redirect(url_for('manage_payments'))
+
+# route for cash payment
+@app.route('/admin/add_cash_payment', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_cash_payment():
+    students = Student.query.all()
+    courses = Course.query.all()
+
+    if request.method == 'POST':
+        student_id = request.form.get('student_id', ' ').strip()
+        course_id = request.form.get('course_id', ' ').strip()
+        amount = request.form.get('amount', ' ').strip()
+        payment_type = request.form.get('payment_type', ' ').strip()
+        for_month = request.form.get('for_month', None)
+
+        new_payment = Payment(
+            student_id=student_id,
+            course_id=course_id,
+            amount=amount,
+            payment_type=payment_type,
+            for_month=for_month if payment_type == 'selected_month' else None,
+            payment_method='CASH',
+            transaction_id=f"CASH-{datetime.now().timestamp()}",
+            order_id=f"CASH-ORDER-{datetime.now().timestamp()}",
+            razorpay_reference_id=f"rf-cash-{datetime.now().timestamp()}",
+            payment_status='completed',
+            payment_date=datetime.now()
+        )
+        db.session.add(new_payment)
+        db.session.commit()
+
+        flash('Cash payment added successfully!', 'success')
+        return redirect(url_for('manage_payments'))  # change as per your dashboard route
+
+    return render_template('admin_side/payments/add_cash_payment.html', students=students, courses=courses)
+

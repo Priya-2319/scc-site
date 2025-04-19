@@ -60,8 +60,9 @@ def login():
                     session["user_id"] = student.student_id
                     session["user_name"] = student.name
                     session["role"] = "student"
+                    session["gender"] = student.gender
                     flash("Login successful!", "success")
-                    return render_template("student_side/student_dashboard.html")
+                    return redirect(url_for("student_dashboard"))
                 else:
                     flash("Invalid password!", "danger")
                     return redirect(url_for("login"))
@@ -93,7 +94,7 @@ def login():
                     session["user_name"] = manager.name
                     session["role"] = "admin"
                     flash("Login successful!", "success")
-                    return render_template("admin_side/admin_dashboard.html")
+                    return redirect(url_for('admin_dashboard'))
                 else:
                     flash("Invalid password!", "danger")
                     return redirect(url_for("login"))
@@ -157,7 +158,8 @@ def logout():
 @login_required
 @admin_required
 def admin_dashboard():
-    return render_template("admin_side/admin_dashboard.html")
+    user = session['user_name']
+    return render_template("admin_side/admin_dashboard.html", user=user)
 
 @app.route("/add_student", methods=["GET", "POST"])
 @login_required
@@ -166,6 +168,8 @@ def add_student():
     if request.method == 'POST':
         student_id = request.form['student_id']
         name = request.form['name']
+        gender = request.form['gender']
+        dob = request.form['dob']
         email = request.form['email']
         password = request.form['password']
         phone = request.form['phone']
@@ -175,13 +179,22 @@ def add_student():
             return redirect(url_for('add_student'))
 
         student = Student.query.filter_by(student_id=student_id).first()
+        exist_phone = Student.query.filter_by(phone=phone).first()
+        exist_email = Student.query.filter_by(email=email).first()
         if student:
             flash('Student already exists!', 'danger')
             return redirect(url_for('add_student'))
         
+        if exist_email:
+            flash('Email already exists!', 'danger')
+            return redirect(url_for('add_student'))
+        if exist_phone:
+            flash('Phone number already exists!', 'danger')
+            return redirect(url_for('add_student'))
+        
         hashed_password = generate_password_hash(password)
 
-        new_student = Student(student_id=student_id, name=name, email=email, password=hashed_password, phone=phone)
+        new_student = Student(student_id=student_id, name=name, gender=gender, dob=dob, email=email, password=hashed_password, phone=phone)
         db.session.add(new_student)
         db.session.commit()
         flash('Student added successfully!', 'success')
@@ -466,8 +479,11 @@ def delete_announcement(id):
 @login_required
 @student_required
 def student_dashboard():
+    student_gender = session['gender']
     current_date = datetime.now().strftime("%d-%m-%Y")
-    return render_template('student_side/student_dashboard.html', current_date=current_date)
+    student_id = session.get("user_id")
+    course = Enrollment.query.filter_by(student_id=student_id).first()
+    return render_template('student_side/student_dashboard.html', current_date=current_date, student_gender=student_gender, course=course)
 
 @app.route('/profile', methods=["GET", "POST"])
 @login_required
@@ -793,6 +809,8 @@ def edit_student(student_id):
     if request.method == 'POST':
         # Get form data
         name = request.form.get('name')
+        gender = request.form.get('gender')
+        dob = request.form.get('dob')
         email = request.form.get('email')
         phone = request.form.get('phone')
         new_password = request.form.get('password')
@@ -816,6 +834,8 @@ def edit_student(student_id):
             student.name = name
             student.email = email
             student.phone = phone
+            student.gender = gender
+            student.dob = dob
             
             # Only update password if a new one was provided
             if new_password:
@@ -825,4 +845,4 @@ def edit_student(student_id):
             flash('Student updated successfully', 'success')
             return redirect(url_for('view_students'))
     
-    return render_template('admin_side/edit_student.html', student=student)
+    return render_template('admin_side/crud_temp/edit_student.html', student=student)

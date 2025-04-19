@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Payments List</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 1cm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            width: 80px;
+            height: auto;
+        }
+
+        h2 {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+        th, td {
+            border: 1px solid #444;
+            padding: 5px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #eee;
+            font-size: 11px;
+        }
+
+        td {
+            font-size: 10px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 10px;
+            text-align: center;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+        <h2>All Payment Records</h2>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 35px;">#</th>
+                <th style="width: 150px;">Transaction ID</th>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Amount</th>
+                <th>Payment Type</th>
+                <th>Month</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in payments %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ p.transaction_id }}</td>
+                <td>{{ p.student_id }}</td>
+                <td>{{ p.student.name }}</td>
+                <td>{{ p.course.course_name }}</td>
+                <td>INR {{ "%.2f"|format(p.amount) }}</td>
+                <td>{{ p.payment_type.replace('_', ' ')|title }}</td>
+                <td>{{ p.for_month or 'N/A' }}</td>
+                <td>{{ p.payment_method }}</td>
+                <td>{{ p.payment_status|title }}</td>
+                <td>{{ p.payment_date.strftime('%d-%b-%Y') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Generated on {{ now }}</p>
+        <p>This is a system-generated document.</p>
+    </div>
+</body>
+</html>

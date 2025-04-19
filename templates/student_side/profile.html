@@ -3,17 +3,25 @@
 {% block title %} My Profile {% endblock %}
 
 {% block content %}
+<!-- back button -->
+<a href="{{ url_for('student_dashboard') }}" class="btn btn-primary mb-2 mt-5"><i class="fas fa-arrow-left"></i> Back to
+    Dashboard</a>
+
 <div class="container py-5">
     <!-- Profile Header -->
     <div class="profile-header text-center mb-5">
-        <div class="profile-avatar mx-auto position-relative">
-            <img src="{{ url_for('static', filename='images/achiver4.jpeg') }}" class="rounded-circle shadow-lg" width="150" height="150">
-            <button class="btn btn-sm btn-light rounded-circle position-absolute bottom-0 end-0 shadow-sm" style="width: 40px; height: 40px;">
-                <i class="fas fa-camera"></i>
-            </button>
+        <div class="profile-img-container mx-auto">
+            {% if student.gender=='Male' %}
+            <img src="{{ url_for('static', filename='images/achiver2.png') }}"
+                class="rounded-circle border border-4 border-white shadow" width="120">
+            {% else %}
+            <img src="{{ url_for('static', filename='images/achiver4.jpeg') }}"
+                class="rounded-circle border border-4 border-white shadow" width="120">
+            {% endif %}
         </div>
-        <h2 class="mt-3 mb-1 fw-bold">{{ student.name }}</h2>
-        <p class="text-muted mb-0"><i class="fas fa-graduation-cap me-2"></i>Student at Science Coaching Center</p>
+        <h2 class="mt-3 mb-1 fw-bold" style="color: #b5ed1a;">{{ student.name }}</h2>
+        <p class=" mb-0" style="color: #ffffff;"><i class="fas fa-graduation-cap me-2"
+                style="color: #b5ed1a;"></i>Student at Science Coaching Center</p>
         <div class="mt-2">
             <span class="badge bg-primary rounded-pill px-3 py-2">Student ID: {{ student.student_id }}</span>
         </div>
@@ -30,14 +38,14 @@
                     <form method="POST" action="{{ url_for('profile') }}">
                         <!-- Flash Messages -->
                         {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
-                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                        {{ message }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
+                        {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
                         {% endwith %}
 
                         <!-- Name Field (Readonly) -->
@@ -47,23 +55,50 @@
                             <small class="text-muted">Contact admin to change your name</small>
                         </div>
 
+                        <!-- for gender -->
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="male" value="Male" {%
+                                        if student.gender=='Male' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="male">Male</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gender" id="female"
+                                        value="Female" {% if student.gender=='Female' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="female">Female</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- for date of birth -->
+                        <div class="mb-3">
+                            <label for="dob" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="dob" name="dob" value="{{ student.dob }}"
+                                required>
+                        </div>
+
                         <!-- Email Field -->
                         <div class="mb-4">
                             <label for="email" class="form-label fw-bold">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ student.email }}" required>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ student.email }}"
+                                required>
                             <div class="form-text">We'll never share your email with anyone else.</div>
                         </div>
 
                         <!-- Phone Field -->
                         <div class="mb-4">
                             <label for="phone" class="form-label fw-bold">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ student.phone }}" required>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ student.phone }}"
+                                required>
                         </div>
 
                         <!-- Password Field -->
                         <div class="mb-4">
                             <label for="password" class="form-label fw-bold">New Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password">
+                            <input type="password" class="form-control" id="password" name="password"
+                                placeholder="Enter new password">
                             <div class="form-text">Leave blank to keep current password</div>
                         </div>
 
@@ -84,7 +119,8 @@
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body p-4">
-                    <h5 class="mb-4 fw-bold"><i class="fas fa-info-circle me-2 text-primary"></i>Account Information</h5>
+                    <h5 class="mb-4 fw-bold"><i class="fas fa-info-circle me-2 text-primary"></i>Account Information
+                    </h5>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="d-flex align-items-center">
@@ -97,58 +133,52 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="col-md-6 mb-3">
-                            <div class="d-flex align-items-center">
-                                <div class="icon-circle bg-success-soft me-3">
-                                    <i class="fas fa-book text-success"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-0 text-muted small">Enrolled Courses</p>
-                                    <p class="mb-0 fw-bold">5 Courses</p>
-                                </div>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="text-center mt-4">
+        <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary mb-2 mt-5"><i class="fas fa-arrow-left"></i> Back to
+            Dashboard</a>
+    </div>
+    
 </div>
 
 <style>
     /* Custom CSS */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-    
+
     body {
         font-family: 'Poppins', sans-serif;
         background-color: #f8f9fa;
     }
-    
+
     .profile-avatar {
         width: 150px;
         height: 150px;
     }
-    
+
     .card {
         transition: all 0.3s ease;
         border: none;
     }
-    
+
     .card:hover {
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
     }
-    
+
     .form-control {
         padding: 12px 15px;
         border-radius: 8px;
         border: 1px solid #e0e0e0;
     }
-    
+
     .form-control:focus {
         border-color: #667eea;
         box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
     }
-    
+
     .icon-circle {
         width: 50px;
         height: 50px;
@@ -157,25 +187,25 @@
         align-items: center;
         justify-content: center;
     }
-    
+
     .bg-primary-soft {
         background-color: rgba(102, 126, 234, 0.1);
     }
-    
+
     .bg-success-soft {
         background-color: rgba(40, 167, 69, 0.1);
     }
-    
+
     .btn-primary {
         background-color: #667eea;
         border-color: #667eea;
     }
-    
+
     .btn-primary:hover {
         background-color: #5a6fd1;
         border-color: #5a6fd1;
     }
-    
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .profile-avatar {

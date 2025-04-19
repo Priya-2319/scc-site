@@ -2,30 +2,161 @@
 
 {% block title %} Edit Announcement {% endblock %}
 
+{% block style %}
+{{ super() }}
+<style>
+    /* Main container styling */
+    .edit-announcement-container {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Image section */
+    .announcement-image {
+        background: url("{{ url_for('static', filename='images/edit.jpeg') }}") center center;
+        background-size: cover;
+        border-radius: 15px 0 0 15px;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        padding: 2rem;
+    }
+    
+    .image-overlay {
+        background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    
+    /* Form section */
+    .form-section {
+        background: linear-gradient(135deg, #550447, #ad033e);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 0 15px 15px 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    [data-bs-theme="dark"] .form-section {
+        background-color: rgba(33, 37, 41, 0.95);
+    }
+    
+    /* Form elements */
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+    
+    [data-bs-theme="dark"] .form-control {
+        background-color: #2c3034;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+    
+    .form-control:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+    
+    /* Buttons */
+    .btn-submit {
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .edit-announcement-container {
+            flex-direction: column;
+        }
+        
+        .announcement-image {
+            width: 100%;
+            border-radius: 15px 15px 0 0;
+            height: 200px;
+        }
+        
+        .form-section {
+            width: 100%;
+            border-radius: 0 0 15px 15px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .form-section {
+            padding: 1.5rem;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-form {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-
-<div class="container mt-4">
-    <h2 class="text-primary"><i class="fas fa-edit"></i> Edit Announcement</h2>
-    <hr>
-
-    <form method="POST">
-        <div class="mb-3">
-            <label for="title" class="form-label">Title:</label>
-            <input type="text" class="form-control" id="title" name="title" value="{{ announcement.title }}" required>
+<div class="edit-announcement-container">
+    <!-- Image Section -->
+    <div class="col-lg-6 p-0 d-none d-lg-block announcement-image">
+        <div class="image-overlay">
+            <h3 style="color: #55ca1f;"><i class="fas fa-bullhorn me-2"></i> Announcement Updates</h3>
+            <p class="mb-0">Edit and refine your important messages</p>
         </div>
+    </div>
+    
+    <!-- Form Section -->
+    <div class="col-lg-6 form-section animate-form">
+        <h2 class="text-primary mb-4">
+            <i class="fas fa-edit me-2"></i>Edit Announcement
+        </h2>
+        
+        <form method="POST">
+            <div class="mb-4">
+                <label for="title" class="form-label fw-semibold">Title</label>
+                <input type="text" class="form-control" id="title" name="title" 
+                       value="{{ announcement.title }}" required>
+            </div>
 
-        <div class="mb-3">
-            <label for="content" class="form-label">Content:</label>
-            <textarea class="form-control" id="content" name="content" rows="4" required>{{ announcement.content }}</textarea>
-        </div>
+            <div class="mb-4">
+                <label for="content" class="form-label fw-semibold">Content</label>
+                <textarea class="form-control" id="content" name="content" 
+                          rows="6" required>{{ announcement.content }}</textarea>
+            </div>
 
-        <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i> Save Changes
-        </button>
-        <a href="{{ url_for('view_notifications') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
-    </form>
+            <div class="d-flex flex-wrap gap-3 mt-4">
+                <button type="submit" class="btn btn-success btn-submit">
+                    <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+                <a href="{{ url_for('view_notifications') }}" class="btn btn-secondary btn-submit">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
+<!-- Include Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}

@@ -5,13 +5,28 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid p-4 bg-light">
-    <h1 class="text-center mt-5 display-4 fw-bold text-primary">Welcome to Science Coaching Center</h1>
-    <p class="text-center lead text-muted mb-4">Your success is our mission!</p>
+<style>
+    body {
+        background-image: url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1600&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        animation: none;
+    }
+</style>
+
+<div class="container-fluid p-4" style="background: linear-gradient(135deg, #c91e90, #2b12a8); border-radius: 0 0 20px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    <h1 class="text-center mt-5 display-4 fw-bold animate__animated animate__fadeInDown animate__slow" style="color: white;">Welcome to Science Coaching Center</h1>
+    <p class="text-center lead mb-4 animate__animated animate__fadeIn animate__delay-1s animate__slower" style="font-weight:semi-bold; font-family:cursive; color:#f1ee24;">Your success is our mission!</p>
 </div>
+
+<!-- Add this in your head section if not already present -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
 <!-- Carousel Section -->
 <div class="container text-center mt-4">
-    <div id="carouselExample" class="carousel slide mx-auto" data-bs-ride="carousel" style="width: 70%; max-height: 500px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); overflow: hidden;">
+    <div id="carouselExample" class="carousel slide mx-auto" data-bs-ride="carousel" style="width: 70%; max-height: 500px; border-radius: 15px; box-shadow: 0 8px 12px rgb(245, 234, 30); overflow: hidden;">
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <img src="{{ url_for('static', filename='images/img1.jpeg') }}" class="d-block w-100" alt="Slide 1">
@@ -35,13 +50,13 @@
 </div>
 
 <!-- Welcome Section -->
-<div class="container text-center my-5">
+<div class="container text-center my-5 p-4" style="background: rgba(15, 113, 233, 0.548); border-radius: 20px; box-shadow: 0 4px 15px rgba(219, 34, 34, 0.839); color:#bdf749">
     <h2>Welcome to Science Coaching Center</h2>
     <p>We provide the best coaching for students preparing for competitive exams and academic success.</p>
 </div>
 
 <!-- Features Section -->
-<div class="container text-center">
+<div class="container text-center p-4" style="background: rgba(230, 16, 16, 0.695); border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
     <div class="row">
         <div class="col-md-4">
             <img src="{{ url_for('static', filename='images/img5.jpg') }}" class="img-fluid rounded shadow" alt="Feature 1">

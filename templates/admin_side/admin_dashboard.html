@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,121 +9,294 @@
         Science Coaching Center
         {% endblock %}
     </title>
-        
+
     {% block style %}
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons and Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Global Background Style -->
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/admin_bg_image.jpg') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 1rem;
+        }
+
+        .welcome-heading:hover {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .cursor {
+            animation: blink 0.7s infinite;
+            opacity: 1;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Card Styling */
+        .action-card {
+            border: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.95);
+            overflow: hidden;
+        }
+
+        [data-bs-theme="dark"] .action-card {
+            background-color: rgba(33, 37, 41, 0.95);
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* Icon Styling */
+        .icon-wrapper {
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover .icon-wrapper {
+            transform: scale(1.1);
+        }
+
+        /* Button Styling */
+        .btn-action {
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .action-card {
+                margin-bottom: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+            }
+
+            .card-text {
+                font-size: 0.9rem;
+            }
+
+            .btn-action {
+                padding: 6px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .col-sm-6 {
+                padding: 0 8px;
+            }
+
+            .action-card {
+                border-radius: 10px;
+            }
+        }
+    </style>
     {% endblock %}
 </head>
+
 <body>
-    {% include 'flash.html'   %}
-    {% include 'admin_side/admin_nav.html'   %}
+    {% include 'flash.html' %}
+    {% include 'admin_side/admin_nav.html' %}
+
     {% block content %}
-    <div class="container mt-4">
-    
+    <div class="container mt-5">
+
         <!-- Welcome Message -->
         <div class="text-center mb-4">
-            <h2 class="fw-bold">Welcome, Admin 👋</h2>
-            <p class="text-muted">Manage students, teachers, and announcements here.</p>
+            <h2 class="fw-bold text-white p-3 rounded-pill animate__animated animate__fadeInDown animate__slow" style="background: linear-gradient(135deg, #550447, #ad033e);
+           box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+           display: inline-block;">
+                Welcome, {{ user }} 👋
+
+            </h2>
+            <p class="text-light" id="typing-text" style="min-height: 24px;"></p>
         </div>
-    
+
         <!-- Admin Actions Section -->
         <div class="row justify-content-center">
-    
-            <!-- Add Student -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow text-center">
+            <!-- Add Student Card -->
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card action-card shadow text-center h-100">
                     <div class="card-body">
-                        <i class="fas fa-user-graduate fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Add Student</h5>
+                        <div class="icon-wrapper mb-3">
+                            <i class="fas fa-user-graduate fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Add Student</h5>
                         <p class="card-text">Enroll new students into the system.</p>
-                        <a href="{{ url_for('add_student') }}" class="btn btn-primary">Add Now</a>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- View Students -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow text-center">
-                    <div class="card-body">
-                        <i class="fas fa-users fa-3x text-secondary mb-3"></i>
-                        <h5 class="card-title">View Students</h5>
-                        <p class="card-text">View and manage all registered students.</p>
-                        <a href="{{ url_for('view_students') }}" class="btn btn-secondary">View List</a>
-                    </div>
-                </div>
-            </div>
-    
-            <!-- Add Teacher -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow text-center">
-                    <div class="card-body">
-                        <i class="fas fa-chalkboard-teacher fa-3x text-success mb-3"></i>
-                        <h5 class="card-title">Add Teacher</h5>
-                        <p class="card-text">Register new teachers for coaching.</p>
-                        <a href="{{ url_for('add_teacher') }}" class="btn btn-success">Add Now</a>
+                        <a href="{{ url_for('add_student') }}" class="btn btn-primary btn-action mt-2">Add Now</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Add Admin -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow text-center">
+            <!-- View Students Card -->
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card action-card shadow text-center h-100">
                     <div class="card-body">
-                        <i class="fas fa-user-shield fa-3x text-info mb-3"></i>
-                        <h5 class="card-title">Add Administrator</h5>
+                        <div class="icon-wrapper mb-3">
+                            <i class="fas fa-users fa-3x text-secondary"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">View Students</h5>
+                        <p class="card-text">View and manage all registered students.</p>
+                        <a href="{{ url_for('view_students') }}" class="btn btn-secondary btn-action mt-2">View List</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Teacher Card -->
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card action-card shadow text-center h-100">
+                    <div class="card-body">
+                        <div class="icon-wrapper mb-3">
+                            <i class="fas fa-chalkboard-teacher fa-3x text-success"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Add Teacher</h5>
+                        <p class="card-text">Register new teachers for coaching.</p>
+                        <a href="{{ url_for('add_teacher') }}" class="btn btn-success btn-action mt-2">Add Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Administrator Card -->
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card action-card shadow text-center h-100">
+                    <div class="card-body">
+                        <div class="icon-wrapper mb-3">
+                            <i class="fas fa-user-shield fa-3x text-info"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Add Administrator</h5>
                         <p class="card-text">Register new admin for coaching.</p>
-                        <a href="{{ url_for('add_manager') }}" class="btn btn-info">Add Now</a>
+                        <a href="{{ url_for('add_manager') }}" class="btn btn-info btn-action mt-2">Add Now</a>
                     </div>
                 </div>
             </div>
-    
-            <!-- Manage Courses -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow text-center">
+
+            <!-- Manage Courses Card -->
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card action-card shadow text-center h-100">
                     <div class="card-body">
-                        <i class="fas fa-book fa-3x text-purple mb-3"></i>
-                        <h5 class="card-title">Manage Courses</h5>
+                        <div class="icon-wrapper mb-3">
+                            <i class="fas fa-book fa-3x" style="color: #6f42c1;"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Manage Courses</h5>
                         <p class="card-text">Add or edit available courses.</p>
-                        <a href="{{ url_for('manage_courses') }}" class="btn btn-purple" style="background-color: #6f42c1; color: white;">Manage Now</a>
+                        <a href="{{ url_for('manage_courses') }}" class="btn btn-action mt-2"
+                            style="background-color: #6f42c1; color: white;">Manage Now</a>
                     </div>
                 </div>
             </div>
-    
-            <!-- Manage Enrollments -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow text-center">
+
+            <!-- Manage Enrollments Card -->
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card action-card shadow text-center h-100">
                     <div class="card-body">
-                        <i class="fas fa-clipboard-list fa-3x text-orange mb-3"></i>
-                        <h5 class="card-title">Manage Enrollments</h5>
+                        <div class="icon-wrapper mb-3">
+                            <i class="fas fa-clipboard-list fa-3x" style="color: #fd7e14;"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Manage Enrollments</h5>
                         <p class="card-text">View and manage student enrollments.</p>
-                        <a href="{{ url_for('manage_enrollments') }}" class="btn btn-orange" style="background-color: #fd7e14; color: white;">Manage Now</a>
+                        <a href="{{ url_for('manage_enrollments') }}" class="btn btn-action mt-2"
+                            style="background-color: #fd7e14; color: white;">Manage Now</a>
                     </div>
                 </div>
             </div>
-    
-            <!-- Post Announcement -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow text-center">
+
+            <!-- Post Announcement Card -->
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card action-card shadow text-center h-100">
                     <div class="card-body">
-                        <i class="fas fa-bullhorn fa-3x text-warning mb-3"></i>
-                        <h5 class="card-title">Post Announcement</h5>
+                        <div class="icon-wrapper mb-3">
+                            <i class="fas fa-bullhorn fa-3x text-warning"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">Post Announcement</h5>
                         <p class="card-text">Send notifications to students and staff.</p>
-                        <a href="{{ url_for('add_announcement') }}" class="btn btn-warning">Post Now</a>
+                        <a href="{{ url_for('add_announcement') }}" class="btn btn-warning btn-action mt-2">Post Now</a>
                     </div>
                 </div>
             </div>
-    
         </div>
     </div>
-    
     {% endblock %}
+
     {% block script %}
     <!-- Bootstrap & DataTables JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const text = "Manage students, teachers, announcements & more here.";
+            const element = document.getElementById('typing-text');
+            let i = 0;
+            const speed = 30; // Faster typing speed
+
+            // Add blinking cursor initially
+            element.innerHTML = '<span class="cursor">|</span>';
+
+            function typeWriter() {
+                if (i < text.length) {
+                    // Remove cursor, add next character, then re-add cursor
+                    element.innerHTML = text.substring(0, i + 1) + '<span class="cursor">|</span>';
+                    i++;
+                    setTimeout(typeWriter, speed);
+                } else {
+                    // Remove cursor when finished
+                    element.innerHTML = text;
+                }
+            }
+
+            // Start typing after slight delay
+            setTimeout(typeWriter, 500);
+        });
+    </script>
     {% endblock %}
 </body>
+
 </html>

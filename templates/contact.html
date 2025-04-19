@@ -9,7 +9,7 @@
     <div class="row g-4">
         <!-- Contact Info Cards -->
         <div class="col-lg-4 col-md-6">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0" style="background-color: rgba(47, 116, 235, 0.801);">
                 <div class="card-body text-center">
                     <i class="bi bi-geo-alt fs-2 text-danger"></i>
                     <h5 class="fw-bold mt-2">Our Address</h5>
@@ -19,7 +19,7 @@
         </div>
 
         <div class="col-lg-4 col-md-6">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0" style="background-color: rgba(241, 38, 150, 0.801);">
                 <div class="card-body text-center">
                     <i class="bi bi-envelope fs-2 text-primary"></i>
                     <h5 class="fw-bold mt-2">Email Us</h5>
@@ -29,7 +29,7 @@
         </div>
 
         <div class="col-lg-4 col-md-6">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0" style="background-color: rgba(235, 96, 36, 0.801);">
                 <div class="card-body text-center">
                     <i class="bi bi-telephone fs-2 text-success"></i>
                     <h5 class="fw-bold mt-2">Call Us</h5>
@@ -42,9 +42,9 @@
     <!-- Contact Form -->
     <div class="row justify-content-center mt-5">
         <div class="col-lg-6 col-md-8">
-            <div class="card shadow-lg border-0">
+            <div class="card shadow-lg border-0" style="background-color: rgba(129, 239, 239, 0.705);">
                 <div class="card-body">
-                    <h4 class="text-center fw-bold text-dark">✉️ Send Us a Message</h4>
+                    <h4 class="text-center fw-bold" style="color: blueviolet;">✉️ Send Us a Message</h4>
                     <form method="POST" action="{{ url_for('contact') }}">
                         <!-- Flash Messages -->
                         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -59,15 +59,15 @@
                         {% endwith %}
                         <div class="mb-3">
                             <label for="name" class="form-label fw-semibold">Your Name</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required style="background-color: rgb(104, 24, 24);">
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label fw-semibold">Your Email</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required style="background-color: rgb(104, 24, 24);">
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="form-label fw-semibold">Mobile Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your mobile number" required pattern="[0-9]{10}">
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your mobile number" required pattern="[0-9]{10}" style="background-color: rgb(104, 24, 24);">
                         </div>
                         <div class="mb-3">
                             <label for="message" class="form-label fw-semibold">Your Message</label>

@@ -10,6 +10,8 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(10), nullable=False, unique=True)
     name = db.Column(db.String(100), nullable=False)
+    gender = db.Column(db.String(10), default='Unknown')
+    dob = db.Column(db.Date)  # Date of Birth
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     phone = db.Column(db.String(10), nullable=False, unique=True)
@@ -51,6 +53,9 @@ class Payment(db.Model):
     order_id = db.Column(db.String(100), nullable=False, unique=True)
     razorpay_reference_id = db.Column(db.String(50), unique=True)  # Unique reference ID for Razorpay
     payment_status = db.Column(db.String(10), default='pending', nullable=False)
+
+    student = db.relationship('Student', backref='payments')
+    course = db.relationship('Course', backref='payments')
 
 # Course table model
 class Course(db.Model):

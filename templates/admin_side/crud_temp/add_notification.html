@@ -4,15 +4,15 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="fw-bold text-center">Post a New Announcement</h2>
+    <h2 class="fw-bold text-center" style="color:rgb(219, 10, 10);">Post a New Announcement</h2>
 
-    <form method="POST" action="{{ url_for('add_announcement') }}" class="shadow p-4 rounded mt-4">
+    <form method="POST" action="{{ url_for('add_announcement') }}" class="shadow p-4 rounded mt-4" style="background-color: rgba(206, 34, 146, 0.428);">
         <div class="mb-3">
-            <label class="form-label">Title:</label>
-            <input type="text" name="title" class="form-control" required>
+            <label class="form-label fs-3" style="color: bisque;">Title:</label>
+            <input type="text" name="title" class="form-control" required style="background-color: rgb(255, 254, 254);">
         </div>
         <div class="mb-3">
-            <label class="form-label">Content:</label>
+            <label class="form-label fs-3" style="color: bisque;">Content:</label>
             <textarea name="content" class="form-control" rows="4" required></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Post Announcement</button>

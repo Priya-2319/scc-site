@@ -11,7 +11,7 @@
         <!-- Toggle Button for Mobile -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-list text-white fs-3"></i>
+            <i class="bi bi-list text-white fs-5"></i>
         </button>
 
         <!-- Navbar Links & Search Bar -->
@@ -31,6 +31,15 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-light" href="{{ url_for('contact') }}">Contact Us</a>
+                </li>
+                <!-- Dark/Light Mode Toggle -->
+                <li class="nav-item ms-2" style="margin-top: 9px ;">
+                    <div class="form-check form-switch my-auto">
+                        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                        <label class="form-check-label text-light" for="darkModeToggle">
+                            <i class="bi bi-moon-fill"></i>
+                        </label>
+                    </div>
                 </li>
             </ul>
 
@@ -66,4 +75,55 @@
     body {
         padding-top: 70px;
     }
+
+    /* Dark mode styles */
+    body.dark-mode {
+        background-color: #121212;
+        color: #f8f9fa;
+    }
+    
+    .dark-mode .card {
+        background-color: #1e1e1e;
+        color: #f8f9fa;
+    }
+    
+    .dark-mode .form-control {
+        background-color: #2d2d2d;
+        color: #f8f9fa;
+        border-color: #444;
+    }
+    
+    .dark-mode .form-control:focus {
+        background-color: #2d2d2d;
+        color: #f8f9fa;
+        border-color: #666;
+        box-shadow: 0 0 0 0.25rem rgba(100, 100, 100, 0.25);
+    }
+    
+    /* Add more dark mode styles for other elements as needed */
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        
+        // Check for saved user preference, if any
+        const savedMode = localStorage.getItem('darkMode');
+        if (savedMode === 'enabled') {
+            body.classList.add('dark-mode');
+            darkModeToggle.checked = true;
+        }
+        
+        // Toggle dark mode
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    });
+</script>
