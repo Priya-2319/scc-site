@@ -13,6 +13,7 @@ from xhtml2pdf import pisa
 import base64
 from sqlalchemy.orm import joinedload
 import os
+import pytz
 
 
 # for webhook
@@ -77,12 +78,12 @@ def initiate_payment():
                 'internal_ref': f"SCI-{datetime.now().timestamp()}"
             }
         })
-        
+        india_timezone = pytz.timezone('Asia/Kolkata')
         # Create payment record
         new_payment = Payment(
             student_id=student_id,
             amount=amount,
-            payment_date=datetime.now(),
+            payment_date=datetime.now(india_timezone),
             payment_type=payment_type,
             for_month=for_month,
             course_id=course_id,
@@ -143,10 +144,11 @@ def verify_payment():
             return jsonify({'status': 'error', 'message': 'Payment record not found'}), 400
         
         # Update payment details
+        india_timezone = pytz.timezone('Asia/Kolkata')
         if payment.payment_status != 'completed':
             payment.transaction_id = razorpay_payment_id
             payment.payment_status = 'completed' if razorpay_payment['status'] == 'captured' else razorpay_payment['status']
-            payment.payment_date = datetime.now()
+            payment.payment_date = datetime.now(india_timezone)
             db.session.commit()
         
         return jsonify({
@@ -204,10 +206,11 @@ def handle_webhook_event(data):
 
 def handle_successful_payment(payment):
     payment = Payment.query.filter_by(order_id=payment['order_id']).first()
+    india_timezone = pytz.timezone('Asia/Kolkata')
     if payment and payment.payment_status != 'completed':
         payment.transaction_id = payment['id']
         payment.payment_status = 'completed'
-        payment.payment_date = datetime.now()
+        payment.payment_date = datetime.now(india_timezone)
         db.session.commit()
 
 def handle_failed_payment(payment):
