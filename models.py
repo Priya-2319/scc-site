@@ -119,12 +119,12 @@ class Query(db.Model):
     student_id = db.Column(db.String(10), db.ForeignKey('students.student_id'), nullable=False)
     subject = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    date_submitted = db.Column(db.DateTime, nullable=True)
+    date_submitted = db.Column(db.DateTime, default=datetime.now)
     status = db.Column(db.String(10), default='pending', nullable=False)
 
     # Response fields after status is updated
     response = db.Column(db.Text, nullable=True)
-    response_date = db.Column(db.DateTime, nullable=True)
+    response_date = db.Column(db.DateTime, default=datetime.now)
 
     # Relationships
     student = db.relationship('Student', backref='queries')
@@ -136,7 +136,7 @@ class Message(db.Model):
     email = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(10), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    date_sent = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    date_sent = db.Column(db.DateTime, default=datetime.now)
 
 
 with app.app_context():
