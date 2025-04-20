@@ -145,7 +145,7 @@ def verify_payment():
         if payment.payment_status != 'completed':
             payment.transaction_id = razorpay_payment_id
             payment.payment_status = 'completed' if razorpay_payment['status'] == 'captured' else razorpay_payment['status']
-            payment.payment_date = datetime.utcnow()
+            payment.payment_date = datetime.now()
             db.session.commit()
         
         return jsonify({
@@ -206,7 +206,7 @@ def handle_successful_payment(payment):
     if payment and payment.payment_status != 'completed':
         payment.transaction_id = payment['id']
         payment.payment_status = 'completed'
-        payment.payment_date = datetime.utcnow()
+        payment.payment_date = datetime.now()
         db.session.commit()
 
 def handle_failed_payment(payment):
