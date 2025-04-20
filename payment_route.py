@@ -44,10 +44,12 @@ def payment_page():
         logger.error(f"Payment page error: {str(e)}")
         return redirect(url_for('student_dashboard'))
 
+# Payment Routes
 @app.route('/initiate-payment', methods=['POST'])
 @login_required
 @student_required
 def initiate_payment():
+    """Endpoint to initiate a payment and create Razorpay order"""
     try:
         data = request.get_json()
         student_id = session['user_id']
@@ -63,17 +65,21 @@ def initiate_payment():
         amount, for_month = calculate_payment_details(course, payment_type, data)
         amount_paise = int(amount * 100)
         
-        # Create Razorpay order
+        # Generate a unique internal reference
+        internal_ref = f"SCI-{datetime.now().timestamp()}"
+        
+        # Create Razorpay order with UPI-specific options
         razorpay_order = razorpay_client.order.create({
             'amount': amount_paise,
             'currency': 'INR',
             'payment_capture': '1',
+            'method': 'upi',  # Force UPI method
             'notes': {
                 'student_id': student_id,
                 'course_id': course_id,
                 'payment_type': payment_type,
                 'for_month': for_month,
-                'internal_ref': f"SCI-{datetime.now().timestamp()}"
+                'internal_ref': internal_ref
             }
         })
         
@@ -85,10 +91,10 @@ def initiate_payment():
             payment_type=payment_type,
             for_month=for_month,
             course_id=course_id,
-            payment_method='razorpay',
-            transaction_id=razorpay_order['id'],  # Will be updated to payment_id later
+            payment_method='upi',
+            transaction_id=razorpay_order['id'],
             order_id=razorpay_order['id'],
-            razorpay_reference_id=f"SCI-{datetime.now().timestamp()}",
+            razorpay_reference_id=internal_ref,
             payment_status='pending'
         )
         db.session.add(new_payment)
@@ -99,27 +105,21 @@ def initiate_payment():
             'amount': amount_paise,
             'key_id': app.config['RAZORPAY_KEY_ID'],
             'course_name': course.course_name,
-            'callback_url': url_for('verify_payment', _external=True)
+            'callback_url': url_for('verify_payment', _external=True),
+            'upi_qr_code': razorpay_order.get('upi_qr_code', ''),
+            'internal_ref': internal_ref
         })
         
     except Exception as e:
         logger.error(f"Payment initiation error: {str(e)}")
         return jsonify({'error': 'Payment initialization failed'}), 500
 
-def calculate_payment_details(course, payment_type, data):
-    if payment_type == 'current_month':
-        return course.monthly_fee, datetime.now().strftime('%Y-%m')
-    elif payment_type == 'full_course':
-        return course.full_fee, None
-    elif payment_type == 'selected_month':
-        return course.monthly_fee, data.get('selected_month')
-    else:
-        raise ValueError("Invalid payment type")
 
 @app.route('/verify-payment', methods=['POST'])
 @login_required
 @student_required
 def verify_payment():
+    """Endpoint to verify payment after successful frontend callback"""
     try:
         razorpay_payment_id = request.form['razorpay_payment_id']
         razorpay_order_id = request.form['razorpay_order_id']
@@ -166,8 +166,75 @@ def verify_payment():
             'redirect_url': url_for('payment_failed')
         }), 400
 
+
+@app.route('/check-payment-status', methods=['POST'])
+@login_required
+@student_required
+def check_payment_status():
+    """Endpoint for frontend to poll payment status (especially for UPI payments)"""
+    try:
+        data = request.get_json()
+        order_id = data.get('order_id')
+        internal_ref = data.get('internal_ref')
+        
+        if not order_id and not internal_ref:
+            return jsonify({'error': 'Missing order reference'}), 400
+        
+        # Try to find payment by order_id first, then by internal_ref
+        payment = None
+        if order_id:
+            payment = Payment.query.filter_by(order_id=order_id).first()
+        if not payment and internal_ref:
+            payment = Payment.query.filter_by(razorpay_reference_id=internal_ref).first()
+        
+        if not payment:
+            return jsonify({'status': 'not_found'}), 404
+        
+        # If payment is already marked completed in our DB
+        if payment.payment_status == 'completed':
+            return jsonify({
+                'status': 'completed',
+                'redirect_url': url_for('payment_success')
+            })
+        
+        # If payment is marked failed in our DB
+        if payment.payment_status == 'failed':
+            return jsonify({
+                'status': 'failed',
+                'redirect_url': url_for('payment_failed')
+            })
+        
+        # If still pending, check with Razorpay
+        try:
+            razorpay_order = razorpay_client.order.fetch(payment.order_id)
+            if razorpay_order['status'] == 'paid':
+                # Verify and update payment
+                payments = razorpay_order.get('payments', [])
+                if payments:
+                    razorpay_payment = razorpay_client.payment.fetch(payments[0]['id'])
+                    
+                    payment.transaction_id = razorpay_payment['id']
+                    payment.payment_status = 'completed'
+                    payment.payment_date = datetime.now()
+                    db.session.commit()
+                    
+                    return jsonify({
+                        'status': 'completed',
+                        'redirect_url': url_for('payment_success')
+                    })
+        except Exception as e:
+            logger.error(f"Error checking Razorpay status: {str(e)}")
+        
+        return jsonify({'status': 'pending'})
+        
+    except Exception as e:
+        logger.error(f"Payment status check error: {str(e)}")
+        return jsonify({'status': 'error'}), 500
+
+
 @app.route("/razorpay/webhook/", methods=["POST"])
 def razorpay_webhook():
+    """Endpoint for Razorpay webhook notifications"""
     try:
         webhook_secret = app.config['RAZORPAY_WEBHOOK_SECRET']
         received_signature = request.headers.get('X-Razorpay-Signature')
@@ -192,32 +259,39 @@ def razorpay_webhook():
         logger.error(f"Webhook error: {str(e)}")
         return jsonify({"status": "error"}), 500
 
+
+
+# Helper Functions
+def calculate_payment_details(course, payment_type, data):
+    """Calculate payment amount and month based on payment type"""
+    if payment_type == 'current_month':
+        return course.monthly_fee, datetime.now().strftime('%Y-%m')
+    elif payment_type == 'full_course':
+        return course.full_fee, None
+    elif payment_type == 'selected_month':
+        return course.monthly_fee, data.get('selected_month')
+    else:
+        raise ValueError("Invalid payment type")
+
+
 def handle_webhook_event(data):
+    """Handle different webhook events from Razorpay"""
     event = data['event']
-    payment_entity = data['payload']['payment']['entity']
+    payload = data['payload']
     
-    if event == 'payment.captured':
-        handle_successful_payment(payment_entity)
-    elif event == 'payment.failed':
-        handle_failed_payment(payment_entity)
-
-def handle_successful_payment(payment):
-    payment = Payment.query.filter_by(order_id=payment['order_id']).first()
-    if payment and payment.payment_status != 'completed':
-        payment.transaction_id = payment['id']
-        payment.payment_status = 'completed'
-        payment.payment_date = datetime.now()
-        db.session.commit()
-
-def handle_failed_payment(payment):
-    payment = Payment.query.filter_by(order_id=payment['order_id']).first()
-    if payment and payment.payment_status != 'failed':
-        payment.payment_status = 'failed'
-        db.session.commit()
-
-
-
-
+    if 'payment' in payload and 'entity' in payload['payment']:
+        payment_entity = payload['payment']['entity']
+        
+        if event == 'payment.captured':
+            handle_successful_payment(payment_entity)
+        elif event == 'payment.failed':
+            handle_failed_payment(payment_entity)
+    
+    if 'order' in payload and 'entity' in payload['order']:
+        order_entity = payload['order']['entity']
+        
+        if event == 'order.paid':
+            handle_order_paid(order_entity)
 
 @app.route('/payment/success')
 @login_required
@@ -230,6 +304,39 @@ def payment_success():
 @student_required
 def payment_failed():
     return render_template('student_side/payment_failed.html')
+
+
+def handle_successful_payment(payment):
+    """Update database for successful payment"""
+    payment_record = Payment.query.filter_by(order_id=payment['order_id']).first()
+    if payment_record and payment_record.payment_status != 'completed':
+        payment_record.transaction_id = payment['id']
+        payment_record.payment_status = 'completed'
+        payment_record.payment_date = datetime.now()
+        db.session.commit()
+
+
+def handle_failed_payment(payment):
+    """Update database for failed payment"""
+    payment_record = Payment.query.filter_by(order_id=payment['order_id']).first()
+    if payment_record and payment_record.payment_status != 'failed':
+        payment_record.payment_status = 'failed'
+        db.session.commit()
+
+
+def handle_order_paid(order):
+    """Handle order.paid webhook event (common for UPI payments)"""
+    payment_record = Payment.query.filter_by(order_id=order['id']).first()
+    if payment_record and payment_record.payment_status != 'completed':
+        payments = order.get('payments', [])
+        if payments:
+            razorpay_payment = razorpay_client.payment.fetch(payments[0]['id'])
+            
+            payment_record.transaction_id = razorpay_payment['id']
+            payment_record.payment_status = 'completed'
+            payment_record.payment_date = datetime.now()
+            db.session.commit()
+
 
 @app.route("/student/payment-history")
 @login_required
