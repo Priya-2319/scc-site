@@ -846,3 +846,118 @@ def edit_student(student_id):
             return redirect(url_for('view_students'))
     
     return render_template('admin_side/crud_temp/edit_student.html', student=student)
+
+
+@app.route('/student/query', methods=['GET', 'POST'])
+@login_required
+@student_required
+def submit_query():
+    if request.method == 'POST':
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+        
+        if not subject or not message:
+            flash('Please fill in all fields', 'error')
+            return redirect(url_for('submit_query'))
+        
+        # Create new query
+        new_query = Query(
+            student_id=session['user_id'],
+            subject=subject,
+            message=message,
+            date_submitted=datetime.now(),
+            status='pending'
+        )
+        
+        db.session.add(new_query)
+        db.session.commit()
+        
+        flash('Your query has been submitted successfully!', 'success')
+        return redirect(url_for('query_history'))
+    
+    return render_template('student_side/query_temp/submit_query.html')
+
+@app.route('/student/queries/history')
+@login_required
+@student_required
+def query_history():
+    current_user = session['user_id']
+    queries = Query.query.filter_by(student_id=current_user)\
+                        .order_by(Query.date_submitted.desc())\
+                        .all()
+    return render_template('student_side/query_temp/query_history.html', queries=queries)
+
+@app.route('/query/details/<int:query_id>')
+@login_required
+@student_required
+def query_details(query_id):
+    # Only select the columns we need for the modal
+    query = Query.query.with_entities(
+        Query.subject,
+        Query.message,
+        Query.status,
+        Query.response,
+        Query.date_submitted,
+        Query.response_date
+    ).filter_by(
+        query_id=query_id,
+        student_id=session['user_id']  # Combine filter conditions
+    ).first_or_404()
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template('student_side/query_temp/query_details.html', query=query)
+    return render_template('student_side/query_temp/query_details.html', query=query)
+
+@app.route('/queries')
+@login_required
+@admin_required
+def admin_queries():
+    # Get all pending queries with student information
+    queries = db.session.query(Query, Student)\
+                .join(Student, Query.student_id == Student.student_id)\
+                .order_by(Query.date_submitted.desc())\
+                .all()
+    
+    return render_template('admin_side/queries.html', queries=queries)
+
+@app.route('/respond/<int:query_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def respond_to_query(query_id):
+    query = Query.query.get_or_404(query_id)
+    
+    if request.method == 'POST':
+        response = request.form.get('response')
+        
+        if not response:
+            flash('Please enter a response', 'error')
+            return redirect(url_for('respond_to_query', query_id=query_id))
+        
+        # Update query with response
+        query.response = response
+        query.response_date = datetime.now()
+        query.status = 'resolved'
+        
+        db.session.commit()
+        
+        flash('Response submitted successfully!', 'success')
+        return redirect(url_for('admin_queries'))
+    
+    # Get student details for the query
+    student = Student.query.filter_by(student_id=query.student_id).first()
+    return render_template('admin_side/respond_to_query.html', query=query, student=student)
+
+@app.route('/close/<int:query_id>')
+@login_required
+@admin_required
+def close_query(query_id):
+    query = Query.query.get_or_404(query_id)
+    
+    if query.status != 'resolved':
+        query.status = 'closed'
+        query.response_date = datetime.now()
+        
+        db.session.commit()
+        flash('Query closed successfully', 'success')
+    
+    return redirect(url_for('admin_queries'))

@@ -1,0 +1,138 @@
+{% extends "student_side/student_base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0" style="color: rgb(194, 219, 57);"><i class="fas fa-history me-2" style="color: rgb(174, 111, 16);"></i>My Queries</h2>
+        <a href="{{ url_for('submit_query') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>New Query
+        </a>
+    </div>
+    
+    {% if queries %}
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for query in queries %}
+                    <tr>
+                        <td>{{ query.date_submitted.strftime('%d %b %Y') }}</td>
+                        <td>{{ query.subject }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if query.status == 'pending' %}bg-warning text-dark
+                                {% elif query.status == 'resolved' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ query.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary view-query-btn" 
+                                    data-query-id="{{ query.query_id }}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>You haven't submitted any queries yet.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Query Details Modal -->
+<div class="modal fade" id="queryDetailsModal" tabindex="-1" aria-labelledby="queryDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background-color: blueviolet;">
+                <h5 class="modal-title" id="queryDetailsModalLabel">Query Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="queryDetailsContent">
+                <!-- Content will be loaded here via AJAX -->
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cache modal elements
+        const modal = new bootstrap.Modal('#queryDetailsModal');
+        const modalContent = document.getElementById('queryDetailsContent');
+        const loadingHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `;
+        
+        // Pre-fetch modal content when hovering over buttons
+        document.querySelectorAll('.view-query-btn').forEach(button => {
+            let queryId = button.dataset.queryId;
+            let fetched = false;
+            
+            // Pre-fetch on hover
+            button.addEventListener('mouseenter', function() {
+                if (!fetched) {
+                    fetch(`/query/details/${queryId}`)
+                        .then(response => response.text())
+                        .then(html => {
+                            button.dataset.cachedHtml = html;
+                            fetched = true;
+                        })
+                        .catch(console.error);
+                }
+            });
+            
+            // Click handler
+            button.addEventListener('click', function() {
+                if (button.dataset.cachedHtml) {
+                    modalContent.innerHTML = button.dataset.cachedHtml;
+                    modal.show();
+                } else {
+                    modalContent.innerHTML = loadingHTML;
+                    modal.show();
+                    fetch(`/query/details/${queryId}`)
+                        .then(response => response.text())
+                        .then(html => {
+                            modalContent.innerHTML = html;
+                            button.dataset.cachedHtml = html;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            modalContent.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Failed to load. Please try again.
+                                </div>
+                            `;
+                        });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

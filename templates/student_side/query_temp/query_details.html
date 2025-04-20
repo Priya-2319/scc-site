@@ -1,0 +1,30 @@
+<div class="query-details-container">
+    <div class="mb-3">
+        <h5 class="text-muted small mb-1">Subject</h5>
+        <p class="fw-bold">{{ query.subject }}</p>
+    </div>
+    
+    <div class="mb-3">
+        <h5 class="text-muted small mb-1">Submitted</h5>
+        <p>{{ query.date_submitted.strftime('%b %d, %Y %I:%M %p') }}</p>
+    </div>
+    
+    <div class="mb-3">
+        <h5 class="text-muted small mb-1">Message</h5>
+        <div class="p-2 bg-light rounded">
+            {{ query.message }}
+        </div>
+    </div>
+    
+    {% if query.status != 'pending' and query.response %}
+    <div class="border-top pt-3 mt-3">
+        <h5 class="text-muted small mb-1">Response</h5>
+        <div class="p-2 bg-light rounded mb-2">
+            {{ query.response }}
+        </div>
+        <small class="text-muted">
+            {{ query.response_date.strftime('%b %d, %Y %I:%M %p') }}
+        </small>
+    </div>
+    {% endif %}
+</div>

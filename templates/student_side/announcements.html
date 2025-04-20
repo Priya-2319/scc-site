@@ -10,6 +10,26 @@
         <p class="lead" style="color: rgb(237, 121, 20);">Stay updated with the latest news and announcements.</p>
     </div>
 
+    <!-- Query Card Button -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8">
+            <div class="card query-card-button shadow-sm border-0" onclick="window.location.href='{{ url_for('query_history') }}'">
+                <div class="card-body d-flex align-items-center">
+                    <div class="query-icon me-3">
+                        <i class="fas fa-question-circle fa-3x text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-1">Have a Question?</h5>
+                        <p class="card-text text-muted mb-0">Submit your query to get help from our team</p>
+                    </div>
+                    <div class="ms-auto">
+                        <i class="fas fa-chevron-right text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Announcements List -->
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -46,13 +66,6 @@
     <a href="{{ url_for('student_dashboard') }}" class="btn rounded-pill px-4 py-2 shadow-sm" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border: none; transition: all 0.3s ease;">
         <i class="fas fa-home me-2"></i> Go To Dashboard
     </a>
-    
-    <style>
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 14px rgba(30, 60, 114, 0.3);
-        }
-    </style>
 </div>
 
 <style>
@@ -83,6 +96,35 @@
         border-radius: 10px 10px 0 0 !important;
     }
     
+    /* Query Card Button Styles */
+    .query-card-button {
+        background-color: white;
+        border-radius: 10px !important;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .query-card-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(0, 0, 0, 0.1) !important;
+        background-color: #f8f9ff;
+    }
+    
+    .query-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(13, 110, 253, 0.1);
+        border-radius: 50%;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(30, 60, 114, 0.3);
+    }
+    
     @keyframes fadeInDown {
         from {
             opacity: 0;
@@ -98,6 +140,19 @@
     @media (max-width: 768px) {
         .announcement-header h1 {
             font-size: 2rem;
+        }
+        
+        .query-card-button .card-body {
+            padding: 1rem;
+        }
+        
+        .query-icon {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .query-icon i {
+            font-size: 2rem !important;
         }
     }
 </style>

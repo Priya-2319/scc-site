@@ -15,7 +15,7 @@ class Student(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     phone = db.Column(db.String(10), nullable=False, unique=True)
-    date_registered = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    date_registered = db.Column(db.DateTime, default=datetime.now)
 
 # Teacher table model
 class Teacher(db.Model):
@@ -27,7 +27,7 @@ class Teacher(db.Model):
     password = db.Column(db.String(100), nullable=False)
     subject = db.Column(db.String(50))
     phone = db.Column(db.String(10), nullable=False, unique=True)
-    date_joined = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    date_joined = db.Column(db.DateTime, default=datetime.now)
 
 # Manager table model
 class Manager(db.Model):
@@ -44,7 +44,7 @@ class Payment(db.Model):
     payment_id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(10), db.ForeignKey('students.student_id'), nullable=False)
     amount = db.Column(db.Numeric(10, 2), nullable=False)
-    payment_date = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    payment_date = db.Column(db.DateTime, default=datetime.now)
     payment_type = db.Column(db.String(20), nullable=False)  # 'monthly', 'full_course', 'selected_month'
     for_month = db.Column(db.String(10), nullable=True)  # Null for full course
     course_id = db.Column(db.Integer, db.ForeignKey('courses.course_id'), nullable=False)
@@ -72,7 +72,7 @@ class Enrollment(db.Model):
     enrollment_id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(10), db.ForeignKey('students.student_id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.course_id'), nullable=False)
-    enrollment_date = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    enrollment_date = db.Column(db.DateTime, default=datetime.now)
     status = db.Column(db.String(10), default='active', nullable=False)
     
     # Relationships
@@ -85,7 +85,7 @@ class Announcement(db.Model):
     announcement_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text)
-    date_posted = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    date_posted = db.Column(db.DateTime, default=datetime.now)
     posted_by = db.Column(db.String(50), nullable=False)
 
 # Schedule Class model
@@ -119,7 +119,7 @@ class Query(db.Model):
     student_id = db.Column(db.String(10), db.ForeignKey('students.student_id'), nullable=False)
     subject = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    date_submitted = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    date_submitted = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String(10), default='pending', nullable=False)
 
     # Response fields after status is updated

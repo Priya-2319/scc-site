@@ -1,0 +1,52 @@
+{% extends "admin_side/admin_dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4" style="color: chartreuse;">Respond to Query</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for('admin_queries') }}">Queries</a>
+        </li>
+        <li class="breadcrumb-item active">Respond</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-reply me-1"></i>
+            Response Form
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h5>Student: {{ student.name }} <strong>({{ student.student_id }})</strong></h5>
+                <p class="text-muted">{{ student.email }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h5>Subject: {{ query.subject }}</h5>
+                <p class="text-muted">Submitted on {{ query.date_submitted.strftime('%d %b %Y at %I:%M %p') }}</p>
+            </div>
+
+            <div class="mb-4 p-3 bg-light rounded">
+                <h6>Original Message:</h6>
+                <p>{{ query.message }}</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('respond_to_query', query_id=query.query_id) }}">
+                <div class="mb-3">
+                    <label for="response" class="form-label">Your Response</label>
+                    <textarea class="form-control" id="response" name="response" rows="5" required></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('admin_queries') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i> Submit Response
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
