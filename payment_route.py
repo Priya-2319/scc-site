@@ -335,7 +335,8 @@ def payment_details(payment_id):
 @admin_required
 def generate_receipt(payment_id):
     payment = Payment.query.get_or_404(payment_id)
-    html = render_template('admin_side/payments/receipt_template.html', payment=payment)
+    logo_url = url_for('static', filename='images/logo.png', _external=True)
+    html = render_template('admin_side/payments/receipt_template.html', payment=payment, logo_url=logo_url)
     
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
@@ -353,7 +354,8 @@ def generate_receipt(payment_id):
 @student_required
 def payment_receipt(payment_id):
     payment = Payment.query.get_or_404(payment_id)
-    html = render_template('student_side/payment_receipt.html', payment=payment)
+    logo_url = url_for('static', filename='images/logo.png', _external=True)
+    html = render_template('student_side/payment_receipt.html', payment=payment, logo_url=logo_url)
     
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
