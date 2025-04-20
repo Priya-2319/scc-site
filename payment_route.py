@@ -10,7 +10,7 @@ from pagination import Pagination
 from werkzeug.security import check_password_hash
 from functools import wraps
 from xhtml2pdf import pisa
-from io import BytesIO
+import base64
 from sqlalchemy.orm import joinedload
 import os
 
@@ -335,18 +335,23 @@ def payment_details(payment_id):
 @admin_required
 def generate_receipt(payment_id):
     payment = Payment.query.get_or_404(payment_id)
-    logo_url = url_for('static', filename='images/logo.png', _external=True)
-    html = render_template('admin_side/payments/receipt_template.html', payment=payment, logo_url=logo_url)
+
+    # Load image and encode it as base64
+    with open("static/images/logo.png", "rb") as img_file:
+        encoded_logo = base64.b64encode(img_file.read()).decode('utf-8')
+    logo_data_uri = f"data:image/png;base64,{encoded_logo}"
+
+    html = render_template('admin_side/payments/receipt_template.html', payment=payment, logo=logo_data_uri)
     
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
-    
+
     if not pdf.err:
         response = make_response(result.getvalue())
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = f'inline; filename=receipt_{payment.transaction_id}.pdf'
         return response
-    
+
     return "Error generating PDF", 500
 
 @app.route('/student/payment_id/<int:payment_id>/receipt')
@@ -354,8 +359,11 @@ def generate_receipt(payment_id):
 @student_required
 def payment_receipt(payment_id):
     payment = Payment.query.get_or_404(payment_id)
-    logo_url = url_for('static', filename='images/logo.png', _external=True)
-    html = render_template('student_side/payment_receipt.html', payment=payment, logo_url=logo_url)
+    # Load image and encode it as base64
+    with open("static/images/logo.png", "rb") as img_file:
+        encoded_logo = base64.b64encode(img_file.read()).decode('utf-8')
+    logo_data_uri = f"data:image/png;base64,{encoded_logo}"
+    html = render_template('student_side/payment_receipt.html', payment=payment, logo=logo_data_uri)
     
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
