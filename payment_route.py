@@ -361,7 +361,7 @@ def payment_receipt(payment_id):
     if not pdf.err:
         response = make_response(result.getvalue())
         response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = f'inline; filename=receipt_{payment.transaction_id}.pdf'
+        response.headers['Content-Disposition'] = f'inline; filename=payment_receipt_{payment.transaction_id}.pdf'
         return response
     
     return "Error generating PDF", 500
