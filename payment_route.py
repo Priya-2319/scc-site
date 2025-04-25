@@ -14,6 +14,9 @@ import base64
 from sqlalchemy.orm import joinedload
 import os
 import pytz
+from flask_mail import Mail, Message
+
+mail = Mail(app)
 
 
 # for webhook
@@ -117,6 +120,38 @@ def calculate_payment_details(course, payment_type, data):
         return course.monthly_fee, data.get('selected_month')
     else:
         raise ValueError("Invalid payment type")
+    
+def send_payment_success_email(to_email, name, amount, order_id, transaction_id, for_month, course_name):
+    msg = Message(
+        subject="🎉 Payment Successful",
+        sender="clearupsol015@gmail.com",
+        recipients=[to_email]
+    )
+    msg.body = f"""
+        Hi {name},
+        Student ID: {session['user_id']}
+
+        Your payment of ₹{amount} was successful!
+
+        For Month: {for_month}
+        Course Name: {course_name}
+
+        Order ID: {order_id}
+
+        Transaction ID: {transaction_id}
+
+        Payment Status: Successful
+        Pyment Method: Razorpay
+
+        Thank you for paying with us!
+
+        Regards,
+        Science Coaching Center, Belahi
+        Madhubani, Bihar
+        Phone: 7004380150
+        Email: clearupsol015@gmail.com
+        """
+    mail.send(msg)
 
 @app.route('/verify-payment', methods=['POST'])
 @login_required
@@ -150,6 +185,19 @@ def verify_payment():
             payment.payment_status = 'completed' if razorpay_payment['status'] == 'captured' else razorpay_payment['status']
             payment.payment_date = datetime.now(india_timezone)
             db.session.commit()
+
+        # Send email
+        student = payment.student  # Get the student object from the payment record
+        course = payment.course  # Get the course object from the payment record
+        send_payment_success_email(
+            to_email=student.email,
+            name=student.name,
+            amount=payment.amount,
+            order_id=payment.order_id,
+            transaction_id=payment.transaction_id,
+            for_month=payment.for_month,
+            course_name=course.course_name
+        )
         
         return jsonify({
             'status': 'success',
@@ -448,4 +496,7 @@ def add_cash_payment():
         return redirect(url_for('manage_payments'))  # change as per your dashboard route
 
     return render_template('admin_side/payments/add_cash_payment.html', students=students, courses=courses)
+
+
+
 
