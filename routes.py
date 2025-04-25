@@ -496,13 +496,15 @@ def profile():
         return redirect(url_for("login"))
 
     if request.method == "POST":
-        email = request.form.get("email", '').strip()
-        password = request.form.get("password", '').strip()
-        phone = request.form.get("phone", '').strip()
+        gender = request.form.get('gender')
+        dob = request.form.get('dob')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        new_password = request.form.get('password')
 
         exist_email = Student.query.filter_by(email=email).first()
         exist_phone = Student.query.filter_by(phone=phone).first()
-        hash_password = generate_password_hash(password)
+        hash_password = generate_password_hash(new_password)
 
         if email != student.email:
             if exist_email:
@@ -513,9 +515,12 @@ def profile():
                 flash("Phone number already exists!", "danger")
                 return redirect(url_for("profile"))
         
+        student.dob = dob
         student.email = email
-        student.password = hash_password
         student.phone = phone
+        student.gender = gender
+        if new_password:
+            student.password = hash_password
         db.session.commit()
         flash("Profile updated successfully!", "success")
         return redirect(url_for("profile"))
