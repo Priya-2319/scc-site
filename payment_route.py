@@ -121,7 +121,7 @@ def calculate_payment_details(course, payment_type, data):
     else:
         raise ValueError("Invalid payment type")
     
-def send_payment_success_email(to_email, name, amount, order_id, transaction_id, for_month, course_name):
+def send_payment_success_email(to_email, name, student_id, amount, order_id, transaction_id, for_month, course_name, payment_method):
     msg = Message(
         subject="🎉 Payment Successful",
         sender="clearupsol015@gmail.com",
@@ -129,7 +129,7 @@ def send_payment_success_email(to_email, name, amount, order_id, transaction_id,
     )
     msg.body = f"""
         Hi {name},
-        Student ID: {session['user_id']}
+        Student ID: {student_id}
 
         Your payment of ₹{amount} was successful!
 
@@ -137,15 +137,13 @@ def send_payment_success_email(to_email, name, amount, order_id, transaction_id,
         Course Name: {course_name}
 
         Order ID: {order_id}
-
         Transaction ID: {transaction_id}
-
         Payment Status: Successful
-        Pyment Method: Razorpay
+        Pyment Method: {payment_method}
 
         Thank you for paying with us!
 
-        Regards,
+        Best Regards,
         Science Coaching Center, Belahi
         Madhubani, Bihar
         Phone: 7004380150
@@ -192,11 +190,13 @@ def verify_payment():
         send_payment_success_email(
             to_email=student.email,
             name=student.name,
+            student_id=student.student_id,
             amount=payment.amount,
             order_id=payment.order_id,
             transaction_id=payment.transaction_id,
             for_month=payment.for_month,
-            course_name=course.course_name
+            course_name=course.course_name,
+            payment_method=payment.payment_method
         )
         
         return jsonify({
@@ -491,6 +491,23 @@ def add_cash_payment():
         )
         db.session.add(new_payment)
         db.session.commit()
+
+        payment = Payment.query.filter_by(order_id=new_payment.order_id).first()
+
+        # Send email
+        student = payment.student  # Get the student object from the payment record
+        course = payment.course  # Get the course object from the payment record
+        send_payment_success_email(
+            to_email=student.email,
+            name=student.name,
+            student_id=student.student_id,
+            amount=payment.amount,
+            order_id=payment.order_id,
+            transaction_id=payment.transaction_id,
+            for_month=payment.for_month,
+            course_name=course.course_name,
+            payment_method=payment.payment_method
+        )
 
         flash('Cash payment added successfully!', 'success')
         return redirect(url_for('manage_payments'))  # change as per your dashboard route

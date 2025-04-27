@@ -9,6 +9,8 @@
         Science Coaching Center
         {% endblock %}
     </title>
+    <!-- Favicon Icon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/png">
 
     {% block style %}
     <!-- Icons and Bootstrap -->
@@ -302,6 +304,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-center text-white py-3 mt-4">
+        <p style="color: yellow;">&copy; 2025 Science Coaching Center | All Rights Reserved</p>
+        <p>Designed by Ankit Kumar</p>
+    </footer>
     {% endblock %}
 
     {% block script %}

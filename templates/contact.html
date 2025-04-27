@@ -81,4 +81,32 @@
     </div>
 
 </div>
+
+<!-- Footer -->
+<footer class="footer text-center mt-5 p-4 text-white" style="background: linear-gradient(135deg, #043c5c, #8706ba);">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Quick Links</h5>
+                <a href="{{ url_for('home') }}" class="text-warning">Home</a> |
+                <a href="{{ url_for('about') }}" class="text-warning">About</a> |
+                <a href="{{ url_for('contact') }}" class="text-warning">Contact</a>
+            </div>
+            <div class="col-md-4">
+                <h5>Contact Us</h5>
+                <p><i class="fas fa-phone me-2"></i> +91 9876543210</p>
+                <p><i class="fas fa-envelope me-2"></i> info@sciencecoaching.com</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Follow Us</h5>
+                <a href="#" class="text-white me-3"><i class="fab fa-facebook-f fa-lg"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-youtube fa-lg"></i></a>
+            </div>
+        </div>
+        <hr class="my-3">
+        <p class="mb-0">© 2025 Science Coaching Center. All Rights Reserved.</p>
+        <p class="mb-0">Designed by Ankit Kumar</p>
+    </div>
+</footer>
 {% endblock %}
